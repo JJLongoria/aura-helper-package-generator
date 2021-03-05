@@ -67,20 +67,17 @@ class PackageGenerator {
         const mergedBeforeDestructive = mergePackageFiles(beforeDestructivePackages, apiVersion);
         const mergedAfterDestructive = mergePackageFiles(afterDestructivePackages, apiVersion);
         const result = {};
-        result[PACKAGE_NO_EXT] = false;
-        result[DESTRUCT_BEFORE_NO_EXT] = false;
-        result[DESTRUCT_AFTER_NO_EXT] = false;
+        result[PACKAGE_NO_EXT] = undefined;
+        result[DESTRUCT_BEFORE_NO_EXT] = undefined;
+        result[DESTRUCT_AFTER_NO_EXT] = undefined;
         if (mergedPackage) {
-            this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, mergedPackage.version, false);
-            result[PACKAGE_NO_EXT] = true;
+            result[PACKAGE_NO_EXT] = this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, mergedPackage.version, false);
         }
         if (mergedBeforeDestructive) {
-            this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedBeforeDestructive), outputFolder, mergedBeforeDestructive.version, false);
-            result[DESTRUCT_BEFORE_NO_EXT] = true;
+            result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedBeforeDestructive), outputFolder, mergedBeforeDestructive.version, false);
         }
         if (mergedAfterDestructive) {
-            this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedAfterDestructive), outputFolder, mergedAfterDestructive.version, false);
-            result[DESTRUCT_AFTER_NO_EXT] = true;
+            result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedAfterDestructive), outputFolder, mergedAfterDestructive.version, false);
         }
         return result;
     }
@@ -111,27 +108,41 @@ class PackageGenerator {
             throw new Error('Not package files (' + PACKAGE_NO_EXT + ') or destructive files (' + DESTRUCT_BEFORE_NO_EXT + ', ' + DESTRUCT_AFTER_NO_EXT + ') selected to merge');
         const mergedPackage = mergePackageFiles(packages, apiVersion);
         const result = {};
-        result[PACKAGE_NO_EXT] = false;
-        result[DESTRUCT_BEFORE_NO_EXT] = false;
-        result[DESTRUCT_AFTER_NO_EXT] = false;
+        result[PACKAGE_NO_EXT] = undefined;
+        result[DESTRUCT_BEFORE_NO_EXT] = undefined;
+        result[DESTRUCT_AFTER_NO_EXT] = undefined;
         if (mergedPackage) {
             if (!isDestructive) {
-                result[PACKAGE_NO_EXT] = true;
-                this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, mergedPackage.version, false);
+                result[PACKAGE_NO_EXT] = this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, mergedPackage.version, false);
             } else {
                 if (beforeDeploy) {
-                    result[DESTRUCT_BEFORE_NO_EXT] = true;
-                    this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, mergedPackage.version, false);
+                    result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, mergedPackage.version, false);
                 } else {
-                    result[DESTRUCT_AFTER_NO_EXT] = true;
-                    this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, mergedPackage.version, false);
+                    result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, mergedPackage.version, false);
                 }
             }
         }
         return result;
     }
 
-    static getPackageContent(metadata, apiVersion, explicit) {
+    static getPackageContent(metadataOrPath, apiVersion, explicit) {
+        let metadata;
+        if (typeof metadataOrPath === 'object') {
+            metadata = metadataOrPath;
+        } else {
+            try {
+                metadataOrPath = PathUtils.getAbsolutePath(metadataOrPath);
+            } catch (error) {
+                throw new Error('Wrong file path. Expect a JSON file path and receive ' + metadataOrPath);
+            }
+            if (!FileChecker.isExists(metadataOrPath))
+                throw new Error('File ' + metadataOrPath + ' does not exists or not have access to it');
+            try {
+                metadata = JSON.parse(FileReader.readFileSync(metadataOrPath));
+            } catch(error){
+                throw new Error('File ' + metadataOrPath + ' does not have a valid JSON content. ' + error.message);
+            }
+        }
         apiVersion = Utils.getApiAsString(apiVersion);
         PackageGenerator.validateJSON(metadata);
         explicit = (explicit != undefined) ? explicit : true;
@@ -149,22 +160,37 @@ class PackageGenerator {
     }
 
     static createPackage(metadata, folder, apiVersion, explicit) {
-        createPackageFile(folder, PACKAGE_FILENAME, PackageGenerator.getPackageContent(metadata, apiVersion, explicit));
+        return createPackageFile(folder, PACKAGE_FILENAME, PackageGenerator.getPackageContent(metadata, apiVersion, explicit));
     }
 
     static createBeforeDeployDestructive(metadata, folder, apiVersion, explicit) {
-        createPackageFile(folder, DESTRUCT_BEFORE_FILENAME, PackageGenerator.getPackageContent(metadata, apiVersion, explicit));
+        return createPackageFile(folder, DESTRUCT_BEFORE_FILENAME, PackageGenerator.getPackageContent(metadata, apiVersion, explicit));
     }
 
     static createAfterDeployDestructive(metadata, folder, apiVersion, explicit) {
-        createPackageFile(folder, DESTRUCT_AFTER_FILENAME, PackageGenerator.getPackageContent(metadata, apiVersion, explicit));
+        return createPackageFile(folder, DESTRUCT_AFTER_FILENAME, PackageGenerator.getPackageContent(metadata, apiVersion, explicit));
     }
 
-    static validateJSON(metadata) {
+    static validateJSON(metadataOrPath) {
+        let metadata;
+        if (typeof metadataOrPath === 'object') {
+            metadata = metadataOrPath;
+        } else {
+            try {
+                metadataOrPath = PathUtils.getAbsolutePath(metadataOrPath);
+            } catch (error) {
+                throw new Error('Wrong file path. Expect a JSON file path and receive ' + metadataOrPath);
+            }
+            if (!FileChecker.isExists(metadataOrPath))
+                throw new Error('File ' + metadataOrPath + ' does not exists or not have access to it');
+            try {
+                metadata = JSON.parse(FileReader.readFileSync(metadataOrPath));
+            } catch(error){
+                throw new Error('File ' + metadataOrPath + ' does not have a valid JSON content. ' + error.message);
+            }
+        }
         if (Array.isArray(metadata))
             throw new Error("Wrong JSON Format file. The main object must be a JSON Object not an Array");
-        if (typeof metadata !== 'object')
-            throw new Error("Wrong JSON Format file. The main object must be a JSON Object not a " + typeof metadata);
         Object.keys(metadata).forEach(function (key) {
             let metadataType = metadata[key];
             validateMetadataType(metadataType, key);
@@ -191,7 +217,9 @@ function createPackageFile(outputPath, fileName, content) {
     } catch (error) {
         throw new Error('Wrong output path. Expect a folder path and receive ' + outputPath);
     }
-    FileWriter.createFileSync(outputPath + '/' + fileName, content);
+    const path = outputPath + '/' + fileName;
+    FileWriter.createFileSync(path, content);
+    return path;
 }
 
 function makeTypesBlock(metadataType, explicit) {
@@ -253,6 +281,10 @@ function validateMetadataType(metadataType, key) {
         throw new Error("Wrong JSON Format for Metadata Type with key " + key + ". Missing checked field");
     if (typeof metadataType.checked !== 'boolean')
         throw new Error("Wrong JSON Format for Metadata Type with key " + key + ". checked field must be a boolean, not a " + typeof metadataType.checked);
+    if (metadataType.path !== undefined && typeof metadataType.path !== 'string')
+        throw new Error("Wrong JSON Format for Metadata Type with key " + key + ". path field must be a string, not a " + typeof metadataType.path);
+    if (metadataType.suffix !== undefined && typeof metadataType.suffix !== 'string')
+        throw new Error("Wrong JSON Format for Metadata Type with key " + key + ". suffix field must be a string, not a " + typeof metadataType.suffix);
     if (metadataType.childs === undefined)
         throw new Error("Wrong JSON Format for Metadata Type with key " + key + ". Missing childs field");
     if (Array.isArray(metadataType.childs))
@@ -270,6 +302,8 @@ function validateMetadataObject(metadataObject, key, type) {
         throw new Error("Wrong JSON Format for Metadata Object with key " + key + " (" + type + "). Missing checked field");
     if (typeof metadataObject.checked !== 'boolean')
         throw new Error("Wrong JSON Format for Metadata Object with key " + key + " (" + type + "). checked field must be a boolean, not a " + typeof metadataObject.checked);
+    if (metadataObject.path !== undefined && typeof metadataObject.path !== 'string')
+        throw new Error("Wrong JSON Format for Metadata Object with key " + key + " (" + type + "). path field must be a string, not a " + typeof metadataObject.path);
     if (metadataObject.childs === undefined)
         throw new Error("Wrong JSON Format for Metadata Object with key " + key + " (" + type + "). Missing childs field");
     if (Array.isArray(metadataObject.childs))
@@ -283,6 +317,8 @@ function validateMetadataItem(metadataItem, key, object, type) {
         throw new Error("Wrong JSON Format for Metadata Item with key " + key + " (" + type + ": " + object + "). Missing name field");
     if (typeof metadataItem.name !== 'string')
         throw new Error("Wrong JSON Format for Metadata Item with key " + key + " (" + type + ": " + object + "). name field must be a string, not a " + typeof metadataItem.name);
+    if (metadataItem.path !== undefined && typeof metadataItem.path !== 'string')
+        throw new Error("Wrong JSON Format for Metadata Item with key " + key + " (" + type + ": " + object + "). path field must be a string, not a " + typeof metadataItem.path);
     if (metadataItem.checked === undefined)
         throw new Error("Wrong JSON Format for Metadata Item with key " + key + " (" + type + ": " + object + "). Missing checked field");
     if (typeof metadataItem.checked !== 'boolean')
@@ -321,7 +357,7 @@ function mergePackageFiles(packages, apiVersion) {
     }
     if (result)
         result.version = apiVersion || api;
-    if(result && Object.keys(result).length === 2)
+    if (result && Object.keys(result).length === 2)
         result = undefined;
     return result;
 }
