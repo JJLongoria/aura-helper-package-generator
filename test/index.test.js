@@ -44,6 +44,22 @@ describe('Testing ./index.js', () => {
                 childs: {},
             }
         }, 50, false);
+        content = PackageGenerator.getPackageContent('./test/assets/packages/noPackageFile.json', 50, false);
+        try {
+            content = PackageGenerator.getPackageContent(55, 50, false);
+        } catch (error) {
+            expect(error.message).toMatch('Wrong file path');
+        }
+        try {
+            content = PackageGenerator.getPackageContent('./test/assets/packages/noPackageFiles.json', 50, false);
+        } catch (error) {
+            expect(error.message).toMatch('does not exists or not have access to it');
+        }
+        try {
+            content = PackageGenerator.getPackageContent('./test/assets/packages/package1.xml', 50, false);
+        } catch (error) {
+            expect(error.message).toMatch('does not have a valid JSON content');
+        }
     });
     test('Testing mergePackages()', () => {
         let result = PackageGenerator.mergePackages(packages, './test/assets/merged', 50, false, false);
@@ -152,16 +168,6 @@ describe('Testing ./index.js', () => {
             expect(error.message).toMatch('Wrong JSON Format file. The main object must be a JSON Object not an Array');
         }
         try {
-            PackageGenerator.validateJSON('');
-        } catch (error) {
-            expect(error.message).toMatch('Wrong JSON Format file. The main object must be a JSON Object not a string');
-        }
-        try {
-            PackageGenerator.validateJSON('');
-        } catch (error) {
-            expect(error.message).toMatch('Wrong JSON Format file. The main object must be a JSON Object not a string');
-        }
-        try {
             PackageGenerator.validateJSON({
                 CustomObject: {
                     name: undefined,
@@ -238,6 +244,40 @@ describe('Testing ./index.js', () => {
         } catch (error) {
             expect(error.message).toMatch('Wrong JSON Format for Metadata Type with key CustomObject. childs field must be a JSON Object, not a string');
         }
+        try {
+            PackageGenerator.validateJSON({
+                CustomObject: {
+                    name: 'CustomObject',
+                    checked: false,
+                    childs: {},
+                    path: []
+                }
+            });
+        } catch (error) {
+            expect(error.message).toMatch('Wrong JSON Format for Metadata Type with key CustomObject. path field must be a string, not a object');
+        }
+        try {
+            PackageGenerator.validateJSON({
+                CustomObject: {
+                    name: 'CustomObject',
+                    checked: false,
+                    childs: {},
+                    path: 'path',
+                    suffix: [],
+                }
+            });
+        } catch (error) {
+            expect(error.message).toMatch('Wrong JSON Format for Metadata Type with key CustomObject. suffix field must be a string, not a object');
+        }
+        PackageGenerator.validateJSON({
+            CustomObject: {
+                name: 'CustomObject',
+                checked: false,
+                childs: {},
+                path: 'path',
+                suffix: 'suffix',
+            }
+        });
         try {
             PackageGenerator.validateJSON({
                 CustomField: {
@@ -366,6 +406,38 @@ describe('Testing ./index.js', () => {
                         Account: {
                             name: 'Account',
                             checked: true,
+                            childs: {},
+                            path: []
+                        }
+                    },
+                }
+            });
+        } catch (error) {
+            expect(error.message).toMatch('Wrong JSON Format for Metadata Object with key Account (CustomField). path field must be a string, not a object');
+        }
+        PackageGenerator.validateJSON({
+            CustomField: {
+                name: 'CustomField',
+                checked: false,
+                childs: {
+                    Account: {
+                        name: 'Account',
+                        checked: true,
+                        childs: {},
+                        path: 'path',
+                    }
+                },
+            }
+        });
+        try {
+            PackageGenerator.validateJSON({
+                CustomField: {
+                    name: 'CustomField',
+                    checked: false,
+                    childs: {
+                        Account: {
+                            name: 'Account',
+                            checked: true,
                             childs: {
                                 Name: {
                                     name: undefined,
@@ -444,6 +516,45 @@ describe('Testing ./index.js', () => {
             });
         } catch (error) {
             expect(error.message).toMatch('Wrong JSON Format for Metadata Item with key Name (CustomField: Account). checked field must be a boolean, not a object');
+        }
+        try {
+            PackageGenerator.validateJSON({
+                CustomField: {
+                    name: 'CustomField',
+                    checked: false,
+                    childs: {
+                        Account: {
+                            name: 'Account',
+                            checked: true,
+                            childs: {
+                                Name: {
+                                    name: 'Name',
+                                    checked: false,
+                                    path: []
+                                }
+                            },
+                        }
+                    },
+                }
+            });
+        } catch (error) {
+            expect(error.message).toMatch('Wrong JSON Format for Metadata Item with key Name (CustomField: Account). path field must be a string, not a object');
+        }
+        content = PackageGenerator.validateJSON('./test/assets/packages/noPackageFile.json');
+        try {
+            content = PackageGenerator.validateJSON(55);
+        } catch (error) {
+            expect(error.message).toMatch('Wrong file path');
+        }
+        try {
+            content = PackageGenerator.validateJSON('./test/assets/packages/noPackageFiles.json');
+        } catch (error) {
+            expect(error.message).toMatch('does not exists or not have access to it');
+        }
+        try {
+            content = PackageGenerator.validateJSON('./test/assets/packages/package1.xml');
+        } catch (error) {
+            expect(error.message).toMatch('does not have a valid JSON content');
         }
     })
 });
