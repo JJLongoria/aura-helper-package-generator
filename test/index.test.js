@@ -107,6 +107,7 @@ describe('Testing ./index.js', () => {
     test('Testing mergePackages()', () => {
         let result = PackageGenerator.mergePackages(packages, './test/assets/merged', {
             apiVersion: 50,
+            mergePackages: true,
             mergeDestructives: false,
             beforeDeploy: false,
             explicit: false
@@ -116,6 +117,7 @@ describe('Testing ./index.js', () => {
         expect(result.destructiveChangesPost).toBeTruthy();
         result = PackageGenerator.mergePackages(packages, './test/assets/merged', {
             apiVersion: 50,
+            mergePackages: true,
             mergeDestructives: true,
             beforeDeploy: true,
             explicit: false
@@ -125,6 +127,7 @@ describe('Testing ./index.js', () => {
         expect(result.destructiveChangesPost).toBeFalsy();
         result = PackageGenerator.mergePackages(packages, './test/assets/merged', {
             apiVersion: 50,
+            mergePackages: true,
             mergeDestructives: true,
             beforeDeploy: false,
             explicit: false
@@ -138,6 +141,7 @@ describe('Testing ./index.js', () => {
         expect(result.destructiveChangesPost).toBeTruthy();
         result = PackageGenerator.mergePackages(onlyPackages, './test/assets/merged', {
             apiVersion: 50,
+            mergePackages: true,
             mergeDestructives: false,
             beforeDeploy: false,
             explicit: false

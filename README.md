@@ -487,7 +487,7 @@ The JSON file used by the Package Generator Module have the next structure. Some
 
 # [Ignore File](#ignore-file)
 
-The ignore file is a JSON file used on ignore and create package commands. On this file you can specify metadata types, objects and elements for ignore or delete from your local project or package files. You can have a main ignore file on your root project (like gitignore) named .ahignore.json for use automatically, or have different ignore files and specify it on the commands when you need tou use.
+The ignore file is a JSON file used on ignore, create package or repair dependencies modules. On this file you can specify metadata types, objects and elements for ignore or delete from your local project or package files. You can have a main ignore file on your root project (like gitignore) named .ahignore.json for use automatically, or have different ignore files and specify it on the commands when you need tou use.
 
 The ignore file have the next structure
 
@@ -560,13 +560,3 @@ The ignore file have the next structure
 #### IMPORTANT
 
     Some Metadata Types have singular and plural name like CustomLabels, MatchingRules, EscalationRules... For ignore or remove this types you must use the plural name, if use the singular name the ignore process not take effect with this types.
-
-
-
-
-
-
-
-
-
-
