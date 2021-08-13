@@ -1,9 +1,12 @@
-const { XMLParser } = require('@ah/core').Languages;
-const { XMLUtils, Utils, Validator } = require('@ah/core').Utils;
+const { XML } = require('@ah/languages');
+const XMLParser = XML.XMLParser;
+const XMLUtils = XML.XMLUtils;
+const { Utils, Validator, ProjectUtils } = require('@ah/core').CoreUtils;
 const { MetadataTypes } = require('@ah/core').Values;
-const { TypesFactory, MetadataType, MetadataObject, MetadataItem } = require('@ah/core').Types;
+const { MetadataType, MetadataObject, MetadataItem } = require('@ah/core').Types;
 const { FileReader, FileWriter, PathUtils } = require('@ah/core').FileSystem;
 const Ignore = require('@ah/ignore');
+const TypesFactory = require('@ah/metadata-factory');
 
 const START_XML_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 const PACKAGE_TAG_START = "<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">";
@@ -33,6 +36,7 @@ class PackageGenerator {
         if (!options)
             options = {
                 apiVersion: undefined,
+                mergePackages: true,
                 mergeDestructives: false,
                 beforeDeploy: false,
                 explicit: false,
@@ -40,7 +44,9 @@ class PackageGenerator {
                 typesForIgnore: undefined,
             }
         if (options.apiVersion)
-            options.apiVersion = Utils.getApiAsNumber(options.apiVersion);
+            options.apiVersion = ProjectUtils.getApiAsNumber(options.apiVersion);
+        if (options.mergePackages === undefined)
+            options.mergePackages = true;
         const packages = [];
         let beforeDestructivePackages = [];
         let afterDestructivePackages = [];
@@ -48,7 +54,7 @@ class PackageGenerator {
         for (let file of packageOrDestructiveFiles) {
             file = Validator.validateFilePath(file);
             const fileName = PathUtils.getBasename(file);
-            if (fileName.indexOf(PACKAGE_NO_EXT) !== -1) {
+            if (fileName.indexOf(PACKAGE_NO_EXT) !== -1 && options.mergePackages) {
                 packages.push(file);
             } else if (fileName.indexOf(DESTRUCT_AFTER_NO_EXT) !== -1) {
                 afterDestructivePackages.push(file);
@@ -100,7 +106,7 @@ class PackageGenerator {
                 typesForIgnore: undefined,
             }
         if (options.apiVersion)
-            options.apiVersion = Utils.getApiAsNumber(options.apiVersion);
+            options.apiVersion = ProjectUtils.getApiAsNumber(options.apiVersion);
         const packages = [];
         packageOrDestructiveFiles = XMLUtils.forceArray(packageOrDestructiveFiles);
         for (let file of packageOrDestructiveFiles) {
@@ -152,7 +158,7 @@ class PackageGenerator {
         }
         if (options.ignoreFile)
             metadata = Ignore.ignoreMetadata(metadata, options.ignoreFile, options.typesForIgnore);
-        options.apiVersion = Utils.getApiAsString(options.apiVersion);
+        options.apiVersion = ProjectUtils.getApiAsString(options.apiVersion);
         PackageGenerator.validateJSON(metadata);
         options.explicit = (options.explicit != undefined) ? options.explicit : true;
         let packageContent = '';;

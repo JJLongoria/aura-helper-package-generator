@@ -8,6 +8,26 @@
     "test": "jest --coverage"
   },
   "keywords": [
+    "aura-helper-framework",
+    "aura helper framework",
+    "Aura Helper Framework",
+    "ah-framework",
+    "AH Framework",
+    "Aura Helper",
+    "aura-helper",
+    "AuraHelper Library",
+    "AuraHelper Libraries",
+    "AH",
+    "ah",
+    "Salesforce",
+    "Salesforce Metadata",
+    "Salesforce Apps",
+    "Salesforce XML",
+    "Salesforce Tools",
+    "Apex",
+    "force.com",
+    "DevOps",
+    "devops",
     "Aura Helper Package Generator",
     "Package Generator",
     "ah package generator",
@@ -15,25 +35,26 @@
     "ah-package-generator",
     "ah-package",
     "ah-package-git",
-    "git",
-    "Aura Helper Utils",
-    "Aura Helper Types",
-    "Aura Helper",
-    "AuraHelper",
-    "aura-helper",
-    "aura-helper-cli",
-    "Aura Helper CLI",
-    "Aura Helper VSCode",
-    "Aura Helper Extension"
+    "git"
   ],
   "author": "Juan José Longoria López (Kanko) <juanjoselongoria@gmail.com>",
-  "license": "MIT",
+  "license": "GPLv3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JJLongoria/aura-helper-package-generator"
+  },
+  "bugs": {
+		"url": "https://github.com/JJLongoria/aura-helper-package-generator/issues",
+		"email": "juanjoselongoria@gmail.com"
+	},
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "jest": "^26.6.3"
   },
   "dependencies": {
     "@ah/core": "file:../ah-core",
-    "@ah/ignore": "file:../ah-ignore"
+    "@ah/languages": "file:../ah-languages",
+    "@ah/ignore": "file:../ah-ignore",
+    "@ah/metadata-factory": "file:../ah-metadata-factory"
   }
 }
