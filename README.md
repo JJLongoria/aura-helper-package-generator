@@ -99,7 +99,7 @@ Method to merge several package xml files (including destructiveChanges.xml and 
 
 ### **Parameters:**
   - **packageOrDestructiveFiles**: File or list of files to merge (including package and destructive files in the same list)
-    - String | Array<String> 
+    - String | Array\<String\> 
   - **outputFolder**: Folder to save the created files
     - String
   - **options**: Package Generator options to choose the options to merge
@@ -205,7 +205,7 @@ Method to merge all provided files into only one file. You can choose if merge a
 
 ### **Parameters:**
   - **packageOrDestructiveFiles**: File or list of files to merge (including package and destructive files in the same list)
-    - String | Array<String> 
+    - String | Array\<String\> 
   - **outputFolder**: Folder to save the created files
     - String
   - **options**: Package Generator options to choose the options to merge
