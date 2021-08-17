@@ -311,7 +311,7 @@ Merge all package XML, all destructiveChanges XML and all destructiveChangesPost
     console.log(result.destructiveChangesPost);     // undefined
 ---
 ## [**getPackageContent(metadataOrPath, options)**](#getpackagecontentmetadataorpath-options)
-Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata File.
+Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to get the package or destructive XML content.
@@ -371,7 +371,7 @@ You have several options to get Package XML Content:
                                                        // ...
 ---
 ## [**createPackage(metadataOrPath, outputFolder, options)**](#createpackagemetadataorpath-outputfolder-options)
-Method to create a package XML file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata File.
+Method to create a package XML file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to create the package file.
@@ -432,7 +432,7 @@ You have several options to create the XML Package file:
     console.log(packageFromJSONObjectResult);        // [rootPath]/path/to/json/package.xml
 ---
 ## [**createBeforeDeployDestructive(metadataOrPath, outputFolder, options)**](#createbeforedeploydestructivemetadataorpath-outputfolder-options)
-Method to create a before deploy destructive file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata File.
+Method to create a before deploy destructive file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to create the destructive file.
@@ -492,7 +492,7 @@ You have several options to create the XML before destructive file:
 ---
 
 ## [**createAfterDeployDestructive(metadataOrPath, outputFolder, options)**](#createafterdeploydestructivemetadataorpath-outputfolder-options)
-Method to create an after deploy destructive file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata File.
+Method to create an after deploy destructive file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to create the destructive file.
@@ -551,7 +551,7 @@ You have several options to create the XML after destructive file:
     console.log(packageFromJSONObjectResult);          // [rootPath]/path/to/json/destructiveChangesPost.xml
 ---
 ## [**validateJSON(metadataOrPath)**](#validatejsonmetadataorpath)
-Method to validate a Metadata JSON file or Metadata JSON Object format. If is not valid, throw several exceptions. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata File. 
+Method to validate a Metadata JSON file or Metadata JSON Object format. If is not valid, throw several exceptions. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format 
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to validate.
@@ -568,7 +568,7 @@ This method can throw the next exceptions:
 ### **Example:**
 **Create and Validate your own JSON File**
 
-You can create your own JSON file to create package files and handle metadata types easy with the MetadataType, MetadataObject and MetadataItem classes from [@ah/core](https://github.com/JJLongoria/aura-helper-core). See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata File. 
+You can create your own JSON file to create package files and handle metadata types easy with the MetadataType, MetadataObject and MetadataItem classes from [@ah/core](https://github.com/JJLongoria/aura-helper-core). See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format 
 
     const PackageGenerator = require('@ah/package-generator');
     const { MetadataType, MetadataObject, MetadataItem } = require('@ah/core').Types;
@@ -635,7 +635,7 @@ All methods to create or merge package or destructive XML files has two importan
         apiVersion: '50.0',                 // Required for create Package from JSON
         explicit: true,                     // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
         ignoreFile: 'path/to/file'          // Path to the JSON file with the ahignore format with the metadata to exclude
-        typesToIgnore: ['CustomObject']     // Optional parameter to ignore metadata. This parameter is used to ignore only the specified metadata on it (also must 
+        typesToIgnore: ['CustomObject']     // Optional parameter to ignore metadata. This parameter is used to ignore only the specified metadata (also must 
                                             // be in ignore file) and avoid ignore all metadata types specified on the file. For example, you have an ignore file
                                             // with CustomObjects, CustomFields and CustomLabels and you only need to ignore the CustomObjects.
     }
@@ -666,7 +666,7 @@ All methods to create or merge package or destructive XML files has two importan
 
 # [**Metadata JSON Format**](#metadata-file)
 
-The Metadata JSON file used by Aura Helper Framework and modules have the next structure. Some fields are required and the datatypes checked to ensure the correct file structure. 
+The Metadata JSON Format used by Aura Helper Framework and modules have the next structure. Some fields are required and the datatypes checked to ensure the correct file structure. 
 
     {
         "MetadataAPIName": {
