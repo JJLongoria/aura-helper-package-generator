@@ -705,7 +705,6 @@ The Metadata JSON Format used by Aura Helper Framework and modules have the next
 
 ### **Example**:
 
-***
     {
         "CustomObject": {
             "name": "CustomObject",
