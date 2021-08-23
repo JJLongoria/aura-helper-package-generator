@@ -59,7 +59,7 @@ class PackageGenerator {
      *      - ignoreFile: path to the ignore file to ignore some metadata types from the packages
      *      - typesToIgnore: Object with the Metadata Types and Object to ignore, if exists on ignore file and not ignore the rest of the elements of the file
      * 
-     * @returns Returns a PackageGeneratorOptions object with the default values. The default values are:
+     * @returns {PackageGeneratorOptions} Returns a PackageGeneratorOptions object with the default values. The default values are:
      *      - apiVersion: undefined
      *      - mergePackages: true
      *      - mergeDestructives: false
@@ -77,7 +77,7 @@ class PackageGenerator {
      * Method to merge several package xml files (including destructiveChanges.xml and destructiveChangesPost.xml files) to combine into one file of each type, combine all packages in one file and all detructives in another file.
      * @param {String | Array<String>} packageOrDestructiveFiles File or list of files to merge (including package and destructive files in the same list)
      * @param {String} outputFolder Folder to save the created files
-     * @param {PackageGeneratorOptions} options Package Generator options to choose the options to merge
+     * @param {PackageGeneratorOptions?} options Package Generator options to choose the options to merge
      * 
      * @returns {PackageGeneratorResult} Object with the merge result including the paths of the merged files
      * 
@@ -146,7 +146,7 @@ class PackageGenerator {
      * Method to merge all provided files into only one file. You can choose if merge all into a package.xml, destructiveChanges.xml or destructiveChangesPost.xml
      * @param {String | Array<String>} packageOrDestructiveFiles file or list of files to merge (including package and destructive files in the same list)
      * @param {String} outputFolder Folder to save the created files
-     * @param {PackageGeneratorOptions} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {PackageGeneratorOptions?} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
      * 
      * @returns {PackageGeneratorResult} Object with the merge result including the paths of the merged files
      * 
@@ -199,7 +199,7 @@ class PackageGenerator {
     /**
      * Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object
      * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to get the package or destructive XML content
-     * @param {PackageGeneratorOptions} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {PackageGeneratorOptions?} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
      * 
      * @returns {String} Returns an String with the XML content
      * 
@@ -243,7 +243,7 @@ class PackageGenerator {
      * Method to create a package XML file with the selected Metadata JSON file or Metadata JSON Object
      * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to create the package file
      * @param {String} outputFolder Folder to save the created file
-     * @param {PackageGeneratorOptions} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {PackageGeneratorOptions?} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
      * 
      * @returns {String} Returns the path to the created file
      * 
@@ -266,7 +266,7 @@ class PackageGenerator {
      * Method to create a before deploy destructive file with the selected Metadata JSON file or Metadata JSON Object
      * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to create the destructive file
      * @param {String} outputFolder Folder to save the created file
-     * @param {PackageGeneratorOptions} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {PackageGeneratorOptions?} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
      * 
      * @returns {String} Returns the path to the created file
      * 
@@ -289,7 +289,7 @@ class PackageGenerator {
      * Method to create an after deploy destructive file with the selected Metadata JSON file or Metadata JSON Object
      * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to create the destructive file
      * @param {String} outputFolder Folder to save the created file
-     * @param {PackageGeneratorOptions} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {PackageGeneratorOptions?} options Package Generator options to choose the options to merge. If not provided use the default options calling options() method
      * 
      * @returns {String} Returns the path to the created file
      * 
