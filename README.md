@@ -32,69 +32,314 @@ The file names must contains at least the "package" word to identify the package
 
 You can choose a custom API Version to create the packages, if not specified API version, the package generator get the higher API version from each file types, that is, for package XML files, get the higher API of the Package XML files passed, and the same with other file types.
 
+The setters methods are defined like a builder pattern to make it more usefull
+
+### *Class Members*
+- [**Fields**](#fields)
+
+- [**Constructors**](#constructors)
+
+- [**Methods**](#methods)
+
+</br>
+
+# [**Fields**](#fields)
+The fields that start with _ are for internal use only (Does not modify this fields to a correct PackageGenerator work). To the rest of fields, setter methods are recommended instead modify fields.
+
+
+### [**apiVersion**](#packagegenerator-fields-apiversion)
+True to remove ignored elements from the result object, false only for unselect elements 
+- String | Number
+
+### [**mergePackageFiles**](#packagegenerator-fields-mergepackagefiles)
+true if want to merge the provided package files. If undefiend ot not has param, also set to true
+- Boolean
+
+### [**mergeDestructives**](#packagegenerator-fields-mergedestructives)
+true if want to merge the provided destructive files into one single file. If undefiend ot not has param, also set to true
+- Boolean
+
+### [**isDestructive**](#packagegenerator-fields-isdestructive)
+true if you want to merge all files into one destructive file (valid option to merge packages full). If undefiend ot not has param, also set to true
+- Boolean
+
+### [**beforeDeploy**](#packagegenerator-fields-beforedeploy)
+true if want to merge destructive files into before deploy destructive file when select mergeDestructives. If undefiend ot not has param, also set to true
+- Boolean
+
+### [**explicit**](#packagegenerator-fields-explicit)
+true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
+- Boolean
+
+### [**ignoreFile**](#packagegenerator-fields-ignorefile)
+path to the ignore file to ignore some metadata types from the packages
+- String
+
+### [**typesToIgnore**](#packagegenerator-fields-typestoignore)
+List with the Metadata Type API Names to ignore. This parameter is used to ignore only the specified metadata (also must be in ignore file) and avoid ignore all metadata types specified on the file.
+- Array\<String\>
+
+</br>
+
+# [**Constructors**](#constructors)
+
+## [**constructor(apiVersion)**](#packagegenerator-class-constructors-construct)
+Constructor to instance a new PackageGenerator object. All parameters are optional and you can use the setters methods to set the values when you want.
+
+### **Parameters:**
+  - **apiVersion**: Path to the ignore file
+    - String | Number
+
+</br>
+
 # [**Methods**](#packagegenerator-class-methods)
 
-  - [**options()**](#options)
+  - [**setApiVersion(apiVersion)**](#setapiversionapiversion)
 
-    Method to get the default package generator options.
+    Method to Set the api version to create the packages
 
-  - [**mergePackages(packageOrDestructiveFiles, outputFolder, options)**](#mergepackagespackageordestructivefiles-outputfolder-options)
+  - [**setMergePackagesFiles(mergePackageFiles)**](#setmergepackagesfilesmergepackagefiles)
+
+    Method to set if merge package files
+
+  - [**setMergeDestructives(mergeDestructives)**](#setmergedestructivesmergedestructives)
+
+    Method to set if merge destructive files
+
+  - [**setIsDestructive(isDestructive)**](#setisdestructiveisdestructive)
+
+    Method to set if merge all package and XML destructive files into one destructive file
+
+  - [**setBeforeDeploy(beforeDeploy)**](#setbeforedeploybeforedeploy)
+
+    Method to set if the destructive file to create is before deploy, in otherwise create destructive files after deploy
+
+  - [**setExplicit(explicit)**](#setexplicitexplicit)
+
+    Method to set if put all elements explicit on the package XML or use wildcards when apply
+
+  - [**setIgnoreFile(ignoreFile)**](#setignorefileignorefile)
+
+    Method to set the path to the ignore file
+
+  - [**setTypesToIgnore(typesToIgnore)**](#settypestoignoretypestoignore)
+
+    Method to set the Metadata Types to ignore from package (Also must be exists on ignore file)
+
+  - [**mergePackages(packageOrDestructiveFiles, outputFolder)**](#mergepackagespackageordestructivefiles-outputfolder)
 
     Method to merge several package xml files (including destructiveChanges.xml and destructiveChangesPost.xml files) to combine into one file of each type, combine all packages in one file and all detructives in another file.
 
-  - [**mergePackagesFull(packageOrDestructiveFiles, outputFolder, options)**](#mergepackagesfullpackageordestructivefiles-outputfolder-options)
+  - [**mergePackagesFull(packageOrDestructiveFiles, outputFolder)**](#mergepackagesfullpackageordestructivefiles-outputfolder)
   
     Method to merge all provided files into only one file. You can choose if merge all into a package.xml, destructiveChanges.xml or destructiveChangesPost.xml
 
-  - [**getPackageContent(metadataOrPath, options)**](#getpackagecontentmetadataorpath-options)
+  - [**getPackageContent(metadataOrPath)**](#getpackagecontentmetadataorpath)
 
     Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object
 
-  - [**createPackage(metadataOrPath, outputFolder, options)**](#createpackagemetadataorpath-outputfolder-options)
+  - [**createPackage(metadataOrPath, outputFolder)**](#createpackagemetadataorpath-outputfolder)
 
     Method to create a package XML file with the selected Metadata JSON file or Metadata JSON Object
 
-  - [**createBeforeDeployDestructive(metadataOrPath, outputFolder, options)**](#createbeforedeploydestructivemetadataorpath-outputfolder-options)
+  - [**createBeforeDeployDestructive(metadataOrPath, outputFolder)**](#createbeforedeploydestructivemetadataorpath-outputfolder)
 
     Method to create a before deploy destructive file with the selected Metadata JSON file or Metadata JSON Object
 
-  - [**createAfterDeployDestructive(metadataOrPath, outputFolder, options)**](#createafterdeploydestructivemetadataorpath-outputfolder-options)
+  - [**createAfterDeployDestructive(metadataOrPath, outputFolder)**](#createafterdeploydestructivemetadataorpath-outputfolder)
 
     Method to create an after deploy destructive file with the selected Metadata JSON file or Metadata JSON Object
 
   - [**validateJSON(metadataOrPath)**](#validatejsonmetadataorpath)
 
-    Method to validate a Metadata JSON file or Metadata JSON Object format. If is not valid, throw several exceptions.
---- 
+    Static Method to validate a Metadata JSON file or Metadata JSON Object format. If is not valid, throw several exceptions.
+---
 
-## [**options()**](#options)
-Method to get the default package generator options. The available options are:
-- **apiVersion**: Api version to create the package. If not provided use the latest api version of the provided files
-- **mergePackages**: true if want to merge the provided package files
-- **mergeDestructives**: true if want to merge the provided destructive files into one single file
-- **isDestructive**: true if you want to merge all files into one destructive file (valid option to merge packages full) 
-- **beforeDeploy**: true if want to merge destructive files into before deploy destructive file when select mergeDestructives
-- **explicit**: true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
-- **ignoreFile**: path to the ignore file to ignore some metadata types from the packages
-- **typesToIgnore**: Object with the Metadata Types and Object to ignore, if exists on ignore file and not ignore the rest of the elements of the file
+## [**setApiVersion(apiVersion)**](#setapiversionapiversion)
+Method to Set the api version to create the packages
+
+### **Parameters:**
+  - **apiVersion**: Api version to create the package. If not provided use the latest api version of the provided files
+    - String | Number
 
 ### **Return:**
-Returns a PackageGeneratorOptions object with the default values. 
-- PackageGeneratorOptions
+Return the package generator instance
+- PackageGenerator
 
-The default values are:
+### **Examples:**
 
-    apiVersion: undefined
-    mergePackages: true
-    mergeDestructives: false
-    isDestructive: false
-    beforeDeploy: false
-    explicit: true
-    ignoreFile: undefined
-    typesToIgnore: undefined
+**Set the api version**
+
+    const PackageGenerator = require('@ah/package-generator');
+
+    const generator = new PackageGenerator();
+    generator.setApiVersion('50');
+    generator.setApiVersion('50.0');
+    generator.setApiVersion(50);
+    generator.setApiVersion(50.0);
 
 ---
-## [**mergePackages(packageOrDestructiveFiles, outputFolder, options)**](#mergepackagespackageordestructivefiles-outputfolder-options)
+
+## [**setMergePackagesFiles(mergePackageFiles)**](#setmergepackagesfilesmergepackagefiles)
+Method to set if merge package files
+
+### **Parameters:**
+  - **mergePackageFiles**: true if want to merge the provided package files. If undefiend ot not has param, also set to true
+    - Boolean
+
+### **Return:**
+Return the package generator instance
+- PackageGenerator
+
+### **Examples:**
+
+**Set if merge package files**
+
+    const PackageGenerator = require('@ah/package-generator');
+
+    const generator = new PackageGenerator();
+    generator.setMergePackagesFiles(true);
+    generator.setMergePackagesFiles();  // Also set to true
+
+---
+
+## [**setMergeDestructives(mergeDestructives)**](#setmergedestructivesmergedestructives)
+Method to set if merge destructive files
+
+### **Parameters:**
+  - **mergeDestructives**: true if want to merge the provided destructive files into one single file. If undefiend ot not has param, also set to true
+    - Boolean
+
+### **Return:**
+Return the package generator instance
+- PackageGenerator
+
+### **Examples:**
+
+**Set if merge destructive files**
+
+    const PackageGenerator = require('@ah/package-generator');
+
+    const generator = new PackageGenerator();
+    generator.setMergeDestructives(true);
+    generator.setMergeDestructives();  // Also set to true
+
+---
+
+## [**setIsDestructive(isDestructive)**](#setisdestructiveisdestructive)
+Method to set if merge all package and XML destructive files into one destructive file
+
+### **Parameters:**
+  - **isDestructive**: true if you want to merge all files into one destructive
+    - Boolean
+
+### **Return:**
+Return the package generator instance
+- PackageGenerator
+
+### **Examples:**
+
+**Set if merge all package and destructive files into one destructive**
+
+    const PackageGenerator = require('@ah/package-generator');
+
+    const generator = new PackageGenerator();
+    generator.setIsDestructive(true);
+    generator.setIsDestructive();  // Also set to true
+
+---
+
+## [**setBeforeDeploy(beforeDeploy)**](#setbeforedeploybeforedeploy)
+Method to set if the destructive file to create is before deploy, in otherwise create destructive files after deploy
+
+### **Parameters:**
+  - **beforeDeploy**: true if want to merge destructive files into before deploy destructive file when select mergeDestructives. If undefiend ot not has param, also set to true
+    - Boolean
+
+### **Return:**
+Return the package generator instance
+- PackageGenerator
+
+### **Examples:**
+
+**Set if merge all package and destructive files into one destructive**
+
+    const PackageGenerator = require('@ah/package-generator');
+
+    const generator = new PackageGenerator();
+    generator.setBeforeDeploy(true);
+    generator.setBeforeDeploy();  // Also set to true
+
+---
+
+## [**setExplicit(explicit)**](#setexplicitexplicit)
+Method to set if put all elements explicit on the package XML or use wildcards when apply
+
+### **Parameters:**
+  - **explicit**: true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
+    - Boolean
+
+### **Return:**
+Return the package generator instance
+- PackageGenerator
+
+### **Examples:**
+
+**Set explicit**
+
+    const PackageGenerator = require('@ah/package-generator');
+
+    const generator = new PackageGenerator();
+    generator.setExplicit(true);
+    generator.setExplicit();  // Also set to true
+
+---
+
+## [**setIgnoreFile(ignoreFile)**](#setignorefileignorefile)
+Method to set the path to the ignore file
+
+### **Parameters:**
+  - **ignoreFile**: path to the ignore file to ignore some metadata types from the packages
+    - Boolean
+
+### **Return:**
+Return the package generator instance
+- PackageGenerator
+
+### **Examples:**
+
+**Set file to ignore Metadata Types**
+
+    const PackageGenerator = require('@ah/package-generator');
+
+    const generator = new PackageGenerator();
+    generator.setIgnoreFile('path/to/the/ignore/file.json');
+
+---
+
+## [**setTypesToIgnore(typesToIgnore)**](#settypestoignoretypestoignore)
+Method to set the Metadata Types to ignore from package (Also must be exists on ignore file)
+
+### **Parameters:**
+  - **typesToIgnore**: List with the Metadata Type API Names to ignore. This parameter is used to ignore only the specified metadata (also must be in ignore file) and avoid ignore all metadata types specified on the file.
+    - Boolean
+
+### **Return:**
+Return the package generator instance
+- PackageGenerator
+
+### **Examples:**
+
+**Set Metadata Types to ignore**
+
+    const PackageGenerator = require('@ah/package-generator');
+
+    const generator = new PackageGenerator();
+    generator.setTypesToIgnore('CustomObject');
+    generator.setTypesToIgnore(['CustomObject', 'CustomField']);
+
+---
+## [**mergePackages(packageOrDestructiveFiles, outputFolder)**](#mergepackagespackageordestructivefiles-outputfolder)
 Method to merge several package xml files (including destructiveChanges.xml and destructiveChangesPost.xml files) to combine into one file of each type, combine all packages in one file and all detructives in another file.
 
 ### **Parameters:**
@@ -102,8 +347,6 @@ Method to merge several package xml files (including destructiveChanges.xml and 
     - String | Array\<String\> 
   - **outputFolder**: Folder to save the created files
     - String
-  - **options**: Package Generator options to choose the options to merge
-    - PackageGeneratorOptions
 
 ### **Return:**
 Object with the merge result including the paths of the merged files
@@ -141,7 +384,8 @@ Merge all package XML file into one package XML file, merge all destructive chan
     ];
     const outputFolder = 'path/to/the/output/folder';
 
-    const result = PackageGenerator.mergePackages(filePaths, outputFolder); // Return an object with the full path of the created files;
+    const generator = new PackageGenerator();
+    const result = generator.mergePackages(filePaths, outputFolder); // Return an object with the full path of the created files;
 
     console.log(result.package);                    // [pathFromRoot]/path/to/the/output/folder/package.xml
     console.log(result.destructiveChanges);         // [pathFromRoot]/path/to/the/output/folder/destructiveChanges.xml
@@ -163,11 +407,10 @@ Merge all package XML file into one package XML file and merge all destructive c
         '/test/package/destructiveChangesPostCustom.xml'    // destructiveChangesPost.xml
     ];
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',     // Optional for merge packages because get api version from XML files. (if XML files has no version, apiVersion is required)
-        mergeDestructives: true
-    }
-    const result = PackageGenerator.mergePackages(filePaths, outputFolder, options); // Return an object with the full path of the created files;
+
+    const generator = new PackageGenerator();
+    generator.setApiVersion('50.0').setMergeDestructives();
+    const result = generator.mergePackages(filePaths, outputFolder); // Return an object with the full path of the created files;
     
     console.log(result.package);                    // [pathFromRoot]/path/to/the/output/folder/package.xml
     console.log(result.destructiveChanges);         // undefined    (By default, create destructives after deploy)
@@ -189,18 +432,16 @@ Merge all package XML file into one package XML file and merge all destructive c
         '/test/package/destructiveChangesPostCustom.xml'    // destructiveChangesPost.xml
     ];
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',     // Optional for merge packages because get api version from XML files. (if XML files has no version, apiVersion is required)
-        mergeDestructives: true,
-        beforeDeploy = true;
-    }
-    const result = PackageGenerator.mergePackages(filePaths, outputFolder, options); // Return an object with the full path of the created files;
+
+    const generator = new PackageGenerator(50);
+    generator.setMergeDestructives().beforeDeploy();
+    const result = generator.mergePackages(filePaths, outputFolder); // Return an object with the full path of the created files;
     
     console.log(result.package);                    // [pathFromRoot]/path/to/the/output/folder/package.xml
     console.log(result.destructiveChanges);         // [pathFromRoot]/path/to/the/output/folder/destructiveChanges.xml
     console.log(result.destructiveChangesPost);     // undefined
 ---
-## [**mergePackagesFull(packageOrDestructiveFiles, outputFolder, options)**](#mergepackagesfullpackageordestructivefiles-outputfolder-options)
+## [**mergePackagesFull(packageOrDestructiveFiles, outputFolder)**](#mergepackagesfullpackageordestructivefiles-outputfolder)
 Method to merge all provided files into only one file. You can choose if merge all into a package.xml, destructiveChanges.xml or destructiveChangesPost.xml
 
 ### **Parameters:**
@@ -208,8 +449,6 @@ Method to merge all provided files into only one file. You can choose if merge a
     - String | Array\<String\> 
   - **outputFolder**: Folder to save the created files
     - String
-  - **options**: Package Generator options to choose the options to merge
-    - PackageGeneratorOptions
 
 ### **Return:**
 Object with the merge result including the paths of the merged files
@@ -246,11 +485,9 @@ Merge all package XML, all destructiveChanges XML and all destructiveChangesPost
         '/test/package/destructiveChangesPostCustom.xml'    // destructiveChangesPost.xml
     ];
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',     // Optional for merge packages because get api version from XML files. (if XML files has no version, apiVersion is required)
-    }
 
-    const result = PackageGenerator.mergePackagesFull(filePaths, outputFolder, options); // Return an object with the full path of the created files;
+    const generator = new PackageGenerator(50);
+    const result = generator.mergePackagesFull(filePaths, outputFolder); // Return an object with the full path of the created files;
     
     console.log(result.package);                    // [pathFromRoot]/path/to/the/output/folder/package.xml
     console.log(result.destructiveChanges);         // undefined
@@ -272,12 +509,10 @@ Merge all package XML, all destructiveChanges XML and all destructiveChangesPost
         '/test/package/destructiveChangesPostCustom.xml'    // destructiveChangesPost.xml
     ];
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',     // Optional for merge packages because get api version from XML files. (if XML files has no version, apiVersion is required)
-        isDestructive: true,
-    }
 
-    const result = PackageGenerator.mergePackagesFull(filePaths, outputFolder, apiVersion, isDestructive); // Return an object with the full path of the created files;
+    const generator = new PackageGenerator(50);
+    generator.setIsDestructive();
+    const result = generator.mergePackagesFull(filePaths, outputFolder); // Return an object with the full path of the created files;
     
     console.log(result.package);                    // undefined
     console.log(result.destructiveChanges);         // undefined        (By default, create destructives after deploy)
@@ -304,20 +539,20 @@ Merge all package XML, all destructiveChanges XML and all destructiveChangesPost
         isDestructive: true,
         beforeDeploy: true
     }
-    const result = PackageGenerator.mergePackagesFull(filePaths, outputFolder, apiVersion, isDestructive, beforeDeploy); // Return an object with the full path of the created files;
+    const generator = new PackageGenerator(50);
+    generator.setIsDestructive().setBeforeDeploy();
+    const result = generator.mergePackagesFull(filePaths, outputFolder, apiVersion, isDestructive, beforeDeploy); // Return an object with the full path of the created files;
     
     console.log(result.package);                    // undefined
     console.log(result.destructiveChanges);         // [pathFromRoot]/path/to/the/output/folder/destructiveChanges.xml
     console.log(result.destructiveChangesPost);     // undefined
 ---
-## [**getPackageContent(metadataOrPath, options)**](#getpackagecontentmetadataorpath-options)
+## [**getPackageContent(metadataOrPath)**](#getpackagecontentmetadataorpath)
 Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to get the package or destructive XML content.
     - String | Object
-  - **options**: Package Generator options to choose the options to get the package content
-    - PackageGeneratorOptions
 
 ### **Return:**
 Returns an String with the XML content
@@ -342,12 +577,10 @@ You have several options to get Package XML Content:
 
     const PackageGenerator = require('@ah/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
-    const options = {
-        apiVersion: '50.0',      // Required for create Package from JSON
-        explicit: true,          // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-    }
 
-    const xmlResultFromFile = PackageGenerator.getPackageContent(jsonFilePath, options);
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
+    const xmlResultFromFile = generator.getPackageContent(jsonFilePath);
 
     console.log(xmlResultFromFile);                    // <?xml version="1.0" encoding="UTF-8"?>
                                                        // <Package xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -358,19 +591,17 @@ You have several options to get Package XML Content:
 
     const PackageGenerator = require('@ah/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
-    const options = {
-        apiVersion: '50.0',      // Required for create Package from JSON
-        explicit: true,          // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-    }
 
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
     const jsonContent = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
-    const xmlResultFromJSON = PackageGenerator.getPackageContent(jsonContent, options);
+    const xmlResultFromJSON = generator.getPackageContent(jsonContent);
 
     console.log(xmlResultFromJSON);                    // <?xml version="1.0" encoding="UTF-8"?>
                                                        // <Package xmlns="http://soap.sforce.com/2006/04/metadata">
                                                        // ...
 ---
-## [**createPackage(metadataOrPath, outputFolder, options)**](#createpackagemetadataorpath-outputfolder-options)
+## [**createPackage(metadataOrPath, outputFolder)**](#createpackagemetadataorpath-outputfolder)
 Method to create a package XML file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
@@ -378,8 +609,6 @@ Method to create a package XML file with the selected Metadata JSON file or Meta
     - String | Object
   - **outputFolder**: Folder to save the created file
     - String
-  - **options**: Package Generator options to choose the options to get the package content
-    - PackageGeneratorOptions
 
 ### **Return:**
 Returns the path to the created file
@@ -406,12 +635,10 @@ You have several options to create the XML Package file:
     
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',      // Required for create Package from JSON
-        explicit: true,          // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-    }
 
-    const packageFromFileResult = PackageGenerator.createPackage(jsonFilePath, outputFolder, options);
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
+    const packageFromFileResult = generator.createPackage(jsonFilePath, outputFolder);
 
     console.log(packageFromFileResult);            // [rootPath]/path/to/json/package.xml
 
@@ -421,17 +648,15 @@ You have several options to create the XML Package file:
     
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',      // Required for create Package from JSON
-        explicit: true,          // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-    }
 
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
     const jsonContent = JSON.parse(fs.readFileSync('jsonFilePath', 'utf8'));
-    const packageFromJSONObjectResult = PackageGenerator.createPackage(jsonContent, outputFolder, options);
+    const packageFromJSONObjectResult = generator.createPackage(jsonContent, outputFolder);
 
     console.log(packageFromJSONObjectResult);        // [rootPath]/path/to/json/package.xml
 ---
-## [**createBeforeDeployDestructive(metadataOrPath, outputFolder, options)**](#createbeforedeploydestructivemetadataorpath-outputfolder-options)
+## [**createBeforeDeployDestructive(metadataOrPath, outputFolder)**](#createbeforedeploydestructivemetadataorpath-outputfolder)
 Method to create a before deploy destructive file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
@@ -439,8 +664,6 @@ Method to create a before deploy destructive file with the selected Metadata JSO
     - String | Object
   - **outputFolder**: Folder to save the created file
     - String
-  - **options**: Package Generator options to choose the options to get the package content
-    - PackageGeneratorOptions
 
 ### **Return:**
 Returns the path to the created file
@@ -466,12 +689,10 @@ You have several options to create the XML before destructive file:
     const PackageGenerator = require('@ah/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',      // Required for create Package from JSON
-        explicit: true,          // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-    }
 
-    const packageFromFileResult = PackageGenerator.createBeforeDeployDestructive(jsonFilePath, outputFolder, options);
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
+    const packageFromFileResult = generator.createBeforeDeployDestructive(jsonFilePath, outputFolder);
 
     console.log(packageFromFileResult);          // [rootPath]/path/to/json/destructiveChanges.xml
 
@@ -480,18 +701,16 @@ You have several options to create the XML before destructive file:
     const PackageGenerator = require('@ah/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',      // Required for create Package from JSON
-        explicit: true,          // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-    }
 
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
     const jsonContent = JSON.parse(fs.readFileSync('jsonFilePath', 'utf8'));
-    const packageFromJSONObjectResult = PackageGenerator.createBeforeDeployDestructive(jsonContent, outputFolder, options);
+    const packageFromJSONObjectResult = generator.createBeforeDeployDestructive(jsonContent, outputFolder);
 
     console.log(packageFromJSONObjectResult);          // [rootPath]/path/to/json/destructiveChanges.xml
 ---
 
-## [**createAfterDeployDestructive(metadataOrPath, outputFolder, options)**](#createafterdeploydestructivemetadataorpath-outputfolder-options)
+## [**createAfterDeployDestructive(metadataOrPath, outputFolder)**](#createafterdeploydestructivemetadataorpath-outputfolder)
 Method to create an after deploy destructive file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
@@ -499,8 +718,6 @@ Method to create an after deploy destructive file with the selected Metadata JSO
     - String | Object
   - **outputFolder**: Folder to save the created file
     - String
-  - **options**: Package Generator options to choose the options to get the package content
-    - PackageGeneratorOptions
 
 ### **Return:**
 Returns the path to the created file
@@ -526,12 +743,10 @@ You have several options to create the XML after destructive file:
     const PackageGenerator = require('@ah/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',      // Required for create Package from JSON
-        explicit: true,          // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-    }
 
-    const packageFromFileResult = PackageGenerator.createAfterDeployDestructive(jsonFilePath, outputFolder, options);
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
+    const packageFromFileResult = generator.createAfterDeployDestructive(jsonFilePath, outputFolder);
 
     console.log(packageFromFileResult);          // [rootPath]/path/to/json/destructiveChangesPost.xml
 
@@ -540,22 +755,24 @@ You have several options to create the XML after destructive file:
     const PackageGenerator = require('@ah/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',      // Required for create Package from JSON
-        explicit: true,          // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-    }
 
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
     const jsonContent = JSON.parse(fs.readFileSync('jsonFilePath', 'utf8'));
-    const packageFromJSONObjectResult = PackageGenerator.createAfterDeployDestructive(jsonContent, outputFolder, options);
+    const packageFromJSONObjectResult = generator.createAfterDeployDestructive(jsonContent, outputFolder);
 
     console.log(packageFromJSONObjectResult);          // [rootPath]/path/to/json/destructiveChangesPost.xml
 ---
 ## [**validateJSON(metadataOrPath)**](#validatejsonmetadataorpath)
-Method to validate a Metadata JSON file or Metadata JSON Object format. If is not valid, throw several exceptions. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format 
+Static Method to validate a Metadata JSON file or Metadata JSON Object format. If is not valid, throw several exceptions. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format 
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to validate.
     - String | Object 
+
+### **Return:**
+Returns the Metadata Object Content validated
+- Object
 
 ### **Throws:**
 This method can throw the next exceptions:
@@ -631,16 +848,11 @@ All methods to create or merge package or destructive XML files has two importan
     
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',                 // Required for create Package from JSON
-        explicit: true,                     // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-        ignoreFile: 'path/to/file'          // Path to the JSON file with the ahignore format with the metadata to exclude
-        typesToIgnore: ['CustomObject']     // Optional parameter to ignore metadata. This parameter is used to ignore only the specified metadata (also must 
-                                            // be in ignore file) and avoid ignore all metadata types specified on the file. For example, you have an ignore file
-                                            // with CustomObjects, CustomFields and CustomLabels and you only need to ignore the CustomObjects.
-    }
 
-    const packageFromFileResult = PackageGenerator.createPackage(jsonFilePath, outputFolder, options);
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
+    generator.setIgnoreFile('path/to/file' ).setTypesToIgnore(['CustomObject']);
+    const packageFromFileResult = generator.createPackage(jsonFilePath, outputFolder);
 
     console.log(packageFromFileResult);                    // [rootPath]/path/to/json/package.xml
 
@@ -650,17 +862,12 @@ All methods to create or merge package or destructive XML files has two importan
     
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
-    const options = {
-        apiVersion: '50.0',                 // Required for create Package from JSON
-        explicit: true,                     // true to put all element names explicit in package, false to use wildcards if apply. (recommended explicit=true)
-        ignoreFile: 'path/to/file'          // Path to the JSON file with the ahignore format with the metadata to exclude
-        typesToIgnore: ['CustomObject']     // Optional parameter to ignore metadata. This parameter is used to ignore only the specified metadata on it (also must 
-                                            // be in ignore file) and avoid ignore all metadata types specified on the file. For example, you have an ignore file
-                                            // with CustomObjects, CustomFields and CustomLabels and you only need to ignore the CustomObjects.
-    }
 
+    const generator = new PackageGenerator(50);
+    generator.setExplicit();
+    generator.setIgnoreFile('path/to/file' ).setTypesToIgnore(['CustomObject']);
     const jsonContent = JSON.parse(fs.readFileSync('jsonFilePath', 'utf8'));
-    const packageFromJSONObjectResult = PackageGenerator.createPackage(jsonContent, outputFolder, options);
+    const packageFromJSONObjectResult = PackageGenerator.createPackage(jsonContent, outputFolder);
 
     console.log(packageFromJSONObjectResult);                    // [rootPath]/path/to/json/package.xml
 

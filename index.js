@@ -1,7 +1,7 @@
 const { XML } = require('@ah/languages');
 const XMLParser = XML.XMLParser;
 const XMLUtils = XML.XMLUtils;
-const { Validator, ProjectUtils } = require('@ah/core').CoreUtils;
+const { Validator, ProjectUtils, Utils } = require('@ah/core').CoreUtils;
 const { DataNotFoundException } = require('@ah/core').Exceptions;
 const { MetadataTypes } = require('@ah/core').Values;
 const { MetadataType, MetadataObject, MetadataItem, PackageGeneratorOptions, PackageGeneratorResult } = require('@ah/core').Types;
@@ -45,39 +45,120 @@ const NOT_ALLOWED_WILDCARDS = [
  * if not specified API version, the package generator get the higher API version 
  * from each file types, that is, for package XML files, 
  * get the higher API of the Package XML files passed, and the same with other file types.
+ * 
+ * The setters methods are defined like a builder pattern to make it more usefull
  */
 class PackageGenerator {
 
     /**
-     * Method to get the default package generator options. The available options are
-     *      - apiVersion: Api version to create the package. If not provided use the latest api version of the provided files
-     *      - mergePackages: true if want to merge the provided package files
-     *      - mergeDestructives: true if want to merge the provided destructive files into one single file
-     *      - isDestructive: true if you want to merge all files into one destructive file (valid option to merge packages full) 
-     *      - beforeDeploy: true if want to merge destructive files into before deploy destructive file when select mergeDestructives
-     *      - explicit: true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
-     *      - ignoreFile: path to the ignore file to ignore some metadata types from the packages
-     *      - typesToIgnore: Object with the Metadata Types and Object to ignore, if exists on ignore file and not ignore the rest of the elements of the file
-     * 
-     * @returns {PackageGeneratorOptions} Returns a PackageGeneratorOptions object with the default values. The default values are:
-     *      - apiVersion: undefined
-     *      - mergePackages: true
-     *      - mergeDestructives: false
-     *      - isDestructive: false
-     *      - beforeDeploy: false
-     *      - explicit: true
-     *      - ignoreFile: undefined
-     *      - typesToIgnore: undefined
+     * Constructor to instance a new PackageGenerator object
+     * @param {String | Number} [apiVersion] Api version to create the package. If not provided use the latest api version of the provided files
      */
-    static options() {
-        return new PackageGeneratorOptions();
+    constructor(apiVersion) {
+        this.apiVersion = apiVersion;
+        this.mergePackageFiles = true;
+        this.mergeDestructives = false;
+        this.isDestructive = false;
+        this.beforeDeploy = false;
+        this.explicit = true;
+        this.ignoreFile = undefined;
+        this.typesToIgnore = undefined;
+    }
+
+    /**
+     * Method to Set the api version to create the packages
+     * @param {String | Number} apiVersion Api version to create the package. If not provided use the latest api version of the provided files
+     * 
+     * @returns {PackageGenerator} Return the package generator instance
+     */
+    setApiVersion(apiVersion) {
+        this.apiVersion = apiVersion;
+        return this;
+    }
+
+    /**
+     * Method to set if merge package files
+     * @param {Boolean} mergePackageFiles true if want to merge the provided package files. If undefiend ot not has param, also set to true
+     * 
+     * @returns {PackageGenerator} Return the package generator instance
+     */
+    setMergePackagesFiles(mergePackageFiles) {
+        this.mergePackageFiles = (mergePackageFiles !== undefined && Utils.isBoolean(mergePackageFiles)) ? mergePackageFiles : true;
+        return this;
+    }
+
+
+    /**
+     * Method to set if merge destructive files
+     * @param {Boolean} mergeDestructives true if want to merge the provided destructive files into one single file. If undefiend ot not has param, also set to true
+     * 
+     * @returns {PackageGenerator} Return the package generator instance
+     */
+    setMergeDestructives(mergeDestructives) {
+        this.mergeDestructives = (mergeDestructives !== undefined && Utils.isBoolean(mergeDestructives)) ? mergeDestructives : true;
+        return this;
+    }
+
+
+    /**
+     * Method to set if merge all package and XML destructive files into one destructive file
+     * @param {Boolean} isDestructive true if you want to merge all files into one destructive file (valid option to merge packages full). If undefiend ot not has param, also set to true
+     * 
+     * @returns {PackageGenerator} Return the package generator instance
+     */
+    setIsDestructive(isDestructive) {
+        this.isDestructive = (isDestructive !== undefined && Utils.isBoolean(isDestructive)) ? isDestructive : true;
+        return this;
+    }
+
+    /**
+     * Method to set if the destructive file to create is before deploy, in otherwise create destructive files after deploy
+     * @param {Boolean} beforeDeploy true if want to merge destructive files into before deploy destructive file when select mergeDestructives. If undefiend ot not has param, also set to true
+     * 
+     * @returns {PackageGenerator} Return the package generator instance
+     */
+    setBeforeDeploy(beforeDeploy) {
+        this.beforeDeploy = (beforeDeploy !== undefined && Utils.isBoolean(beforeDeploy)) ? beforeDeploy : true;
+        return this;
+    }
+
+    /**
+     * Method to set if put all elements explicit on the package XML or use wildcards when apply
+     * @param {Boolean} explicit true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
+     * 
+     * @returns {PackageGenerator} Return the package generator instance
+     */
+    setExplicit(explicit) {
+        this.explicit = (explicit !== undefined && Utils.isBoolean(explicit)) ? explicit : true;
+        return this;
+    }
+
+    /**
+     * Method to set the path to the ignore file
+     * @param {String} ignoreFile path to the ignore file to ignore some metadata types from the packages
+     * 
+     * @returns {PackageGenerator} Return the package generator instance
+     */
+    setIgnoreFile(ignoreFile) {
+        this.ignoreFile = ignoreFile;
+        return this;
+    }
+
+    /**
+     * Method to set the Metadata Types to ignore from package (Also must be exists on ignore file)
+     * @param {Object} typesToIgnore List with the Metadata Type API Names to ignore. This parameter is used to ignore only the specified metadata (also must be in ignore file) and avoid ignore all metadata types specified on the file.
+     * 
+     * @returns {PackageGenerator} Return the package generator instance
+     */
+    setTypesToIgnore(typesToIgnore) {
+        this.typesToIgnore = typesToIgnore ? Utils.forceArray(typesToIgnore) : typesToIgnore;
+        return this;
     }
 
     /**
      * Method to merge several package xml files (including destructiveChanges.xml and destructiveChangesPost.xml files) to combine into one file of each type, combine all packages in one file and all detructives in another file.
      * @param {String | Array<String>} packageOrDestructiveFiles File or list of files to merge (including package and destructive files in the same list)
      * @param {String} outputFolder Folder to save the created files
-     * @param {PackageGeneratorOptions} [options] Package Generator options to choose the options to merge
      * 
      * @returns {PackageGeneratorResult} Object with the merge result including the paths of the merged files
      * 
@@ -90,13 +171,11 @@ class PackageGenerator {
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    static mergePackages(packageOrDestructiveFiles, outputFolder, options) {
-        if (!options)
-            options = PackageGenerator.options();
-        if (options.apiVersion)
-            options.apiVersion = ProjectUtils.getApiAsNumber(options.apiVersion);
-        if (options.mergePackages === undefined)
-            options.mergePackages = true;
+    mergePackages(packageOrDestructiveFiles, outputFolder) {
+        if (this.apiVersion)
+            this.apiVersion = ProjectUtils.getApiAsNumber(this.apiVersion);
+        if (this.mergePackageFiles === undefined)
+            this.mergePackageFiles = true;
         const packages = [];
         let beforeDestructivePackages = [];
         let afterDestructivePackages = [];
@@ -104,15 +183,15 @@ class PackageGenerator {
         for (let file of packageOrDestructiveFiles) {
             file = Validator.validateFilePath(file);
             const fileName = PathUtils.getBasename(file);
-            if (fileName.indexOf(PACKAGE_NO_EXT) !== -1 && options.mergePackages) {
+            if (fileName.indexOf(PACKAGE_NO_EXT) !== -1 && this.mergePackageFiles) {
                 packages.push(file);
             } else if (fileName.indexOf(DESTRUCT_AFTER_NO_EXT) !== -1) {
                 afterDestructivePackages.push(file);
             } else if ((fileName.indexOf(DESTRUCT_BEFORE_NO_EXT) !== -1 && fileName.indexOf(DESTRUCT_AFTER_NO_EXT) == -1)) {
                 beforeDestructivePackages.push(file);
             }
-            if (options.mergeDestructives) {
-                if (options.beforeDeploy) {
+            if (this.mergeDestructives) {
+                if (this.beforeDeploy) {
                     beforeDestructivePackages = beforeDestructivePackages.concat(afterDestructivePackages);
                     afterDestructivePackages = [];
                 } else {
@@ -123,21 +202,21 @@ class PackageGenerator {
         }
         if (packages.length === 0 && beforeDestructivePackages.length === 0 && afterDestructivePackages.length === 0)
             throw new DataNotFoundException('Not package files (' + PACKAGE_NO_EXT + ') or destructive files (' + DESTRUCT_BEFORE_NO_EXT + ', ' + DESTRUCT_AFTER_NO_EXT + ') selected to merge');
-        const mergedPackage = mergePackageFiles(packages, options.apiVersion);
-        const mergedBeforeDestructive = mergePackageFiles(beforeDestructivePackages, options.apiVersion);
-        const mergedAfterDestructive = mergePackageFiles(afterDestructivePackages, options.apiVersion);
+        const mergedPackage = mergePackageFiles(packages, this.apiVersion);
+        const mergedBeforeDestructive = mergePackageFiles(beforeDestructivePackages, this.apiVersion);
+        const mergedAfterDestructive = mergePackageFiles(afterDestructivePackages, this.apiVersion);
         const result = new PackageGeneratorResult();
         if (mergedPackage) {
-            options.apiVersion = mergedPackage.version;
-            result[PACKAGE_NO_EXT] = this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, options);
+            this.apiVersion = mergedPackage.version;
+            result[PACKAGE_NO_EXT] = this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
         }
         if (mergedBeforeDestructive) {
-            options.apiVersion = mergedBeforeDestructive.version;
-            result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedBeforeDestructive), outputFolder, options);
+            this.apiVersion = mergedBeforeDestructive.version;
+            result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedBeforeDestructive), outputFolder);
         }
         if (mergedAfterDestructive) {
-            options.apiVersion = mergedAfterDestructive.version;
-            result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedAfterDestructive), outputFolder, options);
+            this.apiVersion = mergedAfterDestructive.version;
+            result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedAfterDestructive), outputFolder);
         }
         return result;
     }
@@ -145,8 +224,7 @@ class PackageGenerator {
     /**
      * Method to merge all provided files into only one file. You can choose if merge all into a package.xml, destructiveChanges.xml or destructiveChangesPost.xml
      * @param {String | Array<String>} packageOrDestructiveFiles file or list of files to merge (including package and destructive files in the same list)
-     * @param {String} outputFolder Folder to save the created files
-     * @param {PackageGeneratorOptions} [options] Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {String} outputFolder Folder to save the created files. If not provided use the default options calling options() method
      * 
      * @returns {PackageGeneratorResult} Object with the merge result including the paths of the merged files
      * 
@@ -159,11 +237,9 @@ class PackageGenerator {
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    static mergePackagesFull(packageOrDestructiveFiles, outputFolder, options) {
-        if (!options)
-            options = PackageGenerator.options();
-        if (options.apiVersion)
-            options.apiVersion = ProjectUtils.getApiAsNumber(options.apiVersion);
+    mergePackagesFull(packageOrDestructiveFiles, outputFolder) {
+        if (this.apiVersion)
+            this.apiVersion = ProjectUtils.getApiAsNumber(this.apiVersion);
         const packages = [];
         packageOrDestructiveFiles = XMLUtils.forceArray(packageOrDestructiveFiles);
         for (let file of packageOrDestructiveFiles) {
@@ -179,17 +255,17 @@ class PackageGenerator {
         }
         if (packages.length === 0)
             throw new DataNotFoundException('Not package files (' + PACKAGE_NO_EXT + ') or destructive files (' + DESTRUCT_BEFORE_NO_EXT + ', ' + DESTRUCT_AFTER_NO_EXT + ') selected to merge');
-        const mergedPackage = mergePackageFiles(packages, options.apiVersion);
+        const mergedPackage = mergePackageFiles(packages, this.apiVersion);
         const result = new PackageGeneratorResult();
         if (mergedPackage) {
-            options.apiVersion = mergedPackage.version;
-            if (!options.isDestructive) {
-                result[PACKAGE_NO_EXT] = this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, options);
+            this.apiVersion = mergedPackage.version;
+            if (!this.isDestructive) {
+                result[PACKAGE_NO_EXT] = this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
             } else {
-                if (options.beforeDeploy) {
-                    result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, options);
+                if (this.beforeDeploy) {
+                    result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
                 } else {
-                    result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder, options);
+                    result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
                 }
             }
         }
@@ -198,8 +274,7 @@ class PackageGenerator {
 
     /**
      * Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object
-     * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to get the package or destructive XML content
-     * @param {PackageGeneratorOptions} [options] Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to get the package or destructive XML content. If not provided use the default options calling options() method
      * 
      * @returns {String} Returns an String with the XML content
      * 
@@ -212,29 +287,24 @@ class PackageGenerator {
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    static getPackageContent(metadataOrPath, options) {
-        if (!options)
-            options = PackageGenerator.options();
+    getPackageContent(metadataOrPath) {
         let metadata;
-        if (typeof metadataOrPath === 'object') {
-            metadata = metadataOrPath;
-        } else {
-            metadata = Validator.validateJSONFile(metadataOrPath);
+        metadata = PackageGenerator.validateJSON(metadataOrPath);
+        if (this.ignoreFile) {
+            metadata = new Ignore(this.ignoreFile).setTypesToIgnore(this.typesToIgnore).ignoreMetadata(metadata);
         }
-        if (options.ignoreFile)
-            metadata = Ignore.ignoreMetadata(metadata, options.ignoreFile, options.typesToIgnore);
-        options.apiVersion = ProjectUtils.getApiAsString(options.apiVersion);
+        this.apiVersion = ProjectUtils.getApiAsString(this.apiVersion);
         PackageGenerator.validateJSON(metadata);
-        options.explicit = (options.explicit != undefined) ? options.explicit : true;
+        this.explicit = (this.explicit != undefined) ? this.explicit : true;
         let packageContent = '';;
         packageContent += START_XML_FILE + NEWLINE;
         packageContent += PACKAGE_TAG_START + NEWLINE;
         Object.keys(metadata).forEach((key) => {
-            const typesBlock = makeTypesBlock(metadata[key], options.explicit);
+            const typesBlock = makeTypesBlock(metadata[key], this.explicit);
             if (typesBlock)
                 packageContent += typesBlock
         });
-        packageContent += '\t' + VERSION_TAG_START + options.apiVersion + VERSION_TAG_END + NEWLINE;
+        packageContent += '\t' + VERSION_TAG_START + this.apiVersion + VERSION_TAG_END + NEWLINE;
         packageContent += PACKAGE_TAG_END;
         return packageContent;
     }
@@ -242,8 +312,7 @@ class PackageGenerator {
     /**
      * Method to create a package XML file with the selected Metadata JSON file or Metadata JSON Object
      * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to create the package file
-     * @param {String} outputFolder Folder to save the created file
-     * @param {PackageGeneratorOptions} [options] Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {String} outputFolder Folder to save the created file. If not provided use the default options calling options() method
      * 
      * @returns {String} Returns the path to the created file
      * 
@@ -256,17 +325,14 @@ class PackageGenerator {
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      * @throws {WrongFormatException} If file is not a JSON file or not have the correct Metadata JSON format
      */
-    static createPackage(metadataOrPath, outputFolder, options) {
-        if (!options)
-            options = PackageGenerator.options();
-        return createPackageFile(outputFolder, PACKAGE_FILENAME, PackageGenerator.getPackageContent(metadataOrPath, options));
+    createPackage(metadataOrPath, outputFolder) {
+        return createPackageFile(outputFolder, PACKAGE_FILENAME, this.getPackageContent(metadataOrPath));
     }
 
     /**
      * Method to create a before deploy destructive file with the selected Metadata JSON file or Metadata JSON Object
      * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to create the destructive file
-     * @param {String} outputFolder Folder to save the created file
-     * @param {PackageGeneratorOptions} [options] Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {String} outputFolder Folder to save the created file. If not provided use the default options calling options() method
      * 
      * @returns {String} Returns the path to the created file
      * 
@@ -279,17 +345,14 @@ class PackageGenerator {
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    static createBeforeDeployDestructive(metadataOrPath, outputFolder, options) {
-        if (!options)
-            options = PackageGenerator.options();
-        return createPackageFile(outputFolder, DESTRUCT_BEFORE_FILENAME, PackageGenerator.getPackageContent(metadataOrPath, options));
+    createBeforeDeployDestructive(metadataOrPath, outputFolder) {
+        return createPackageFile(outputFolder, DESTRUCT_BEFORE_FILENAME, this.getPackageContent(metadataOrPath));
     }
 
     /**
      * Method to create an after deploy destructive file with the selected Metadata JSON file or Metadata JSON Object
      * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to create the destructive file
-     * @param {String} outputFolder Folder to save the created file
-     * @param {PackageGeneratorOptions} [options] Package Generator options to choose the options to merge. If not provided use the default options calling options() method
+     * @param {String} outputFolder Folder to save the created file. If not provided use the default options calling options() method
      * 
      * @returns {String} Returns the path to the created file
      * 
@@ -302,10 +365,8 @@ class PackageGenerator {
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    static createAfterDeployDestructive(metadataOrPath, outputFolder, options) {
-        if (!options)
-            options = PackageGenerator.options();
-        return createPackageFile(outputFolder, DESTRUCT_AFTER_FILENAME, PackageGenerator.getPackageContent(metadataOrPath, options));
+    createAfterDeployDestructive(metadataOrPath, outputFolder) {
+        return createPackageFile(outputFolder, DESTRUCT_AFTER_FILENAME, this.getPackageContent(metadataOrPath));
     }
 
     /**
@@ -316,9 +377,11 @@ class PackageGenerator {
      * @throws {FileNotFoundException} If the file not exists or not have access to it
      * @throws {InvalidFilePathException} If the path is not a file
      * @throws {WrongFormatException} If file is not a JSON file or not have the correct Metadata JSON format
+     * 
+     * @returns {Object} Returns the Metadata Object Content validated
      */
     static validateJSON(metadataOrPath) {
-        Validator.validateMetadataJSON(metadataOrPath);
+        return Validator.validateMetadataJSON(metadataOrPath);
     }
 }
 module.exports = PackageGenerator;
