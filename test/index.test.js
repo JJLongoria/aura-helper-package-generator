@@ -5,7 +5,8 @@ const onlyBeforeDeploy = ['./test/assets/packages/destructiveChanges1.xml', './t
 const onlyafterDeploy = ['./test/assets/packages/destructiveChangesPost1.xml', './test/assets/packages/destructiveChangesPost2.xml'];
 describe('Testing ./index.js', () => {
     test('Testing getPackageContent()', () => {
-        let content = PackageGenerator.getPackageContent({
+        const generator = new PackageGenerator(50);
+        let content = generator.getPackageContent({
             CustomField: {
                 name: 'CustomField',
                 checked: false,
@@ -22,10 +23,8 @@ describe('Testing ./index.js', () => {
                     }
                 },
             }
-        }, {
-            apiVersion: 50
         });
-        content = PackageGenerator.getPackageContent({
+        content = generator.getPackageContent({
             CustomField: {
                 name: 'CustomField',
                 checked: false,
@@ -37,234 +36,161 @@ describe('Testing ./index.js', () => {
                     }
                 },
             }
-        }, {
-            apiVersion: 50
         });
-        content = PackageGenerator.getPackageContent({
+        generator.setExplicit(false);
+        content = generator.getPackageContent({
             CustomField: {
                 name: 'CustomField',
                 checked: false,
                 childs: {},
             }
-        }, {
-            apiVersion: 50,
-            explicit: false
         });
-        content = PackageGenerator.getPackageContent('./test/assets/packages/noPackageFile.json', {
-            apiVersion: 50,
-            explicit: false
-        });
-        content = PackageGenerator.getPackageContent('./test/assets/packages/noPackageFile.json', {
-            apiVersion: 50,
-            explicit: false,
-            ignoreFile: './test/assets/.ahignore.json'
-        });
+        content = generator.getPackageContent('./test/assets/packages/noPackageFile.json');
+        generator.setIgnoreFile('./test/assets/.ahignore.json');
+        content = generator.getPackageContent('./test/assets/packages/noPackageFile.json');
         try {
-            content = PackageGenerator.getPackageContent(55, {
-                apiVersion: 50,
-                explicit: false
-            });
+            content = generator.getPackageContent(55);
         } catch (error) {
             expect(error.message).toMatch('Wrong file path');
         }
         try {
-            content = PackageGenerator.getPackageContent(55);
-        } catch (error) {
-            expect(error.message).toMatch('Wrong file path');
-        }
-        try {
-            content = PackageGenerator.getPackageContent('./test/assets/packages/noPackageFiles.json', {
-                apiVersion: 50,
-                explicit: false
-            });
+            content = generator.getPackageContent('./test/assets/packages/noPackageFiles.json');
         } catch (error) {
             expect(error.message).toMatch('does not exists or not have access to it');
         }
         try {
-            content = PackageGenerator.getPackageContent('./test/assets/packages/package1.xml', {
-                apiVersion: 50,
-                explicit: false
-            });
+            content = generator.getPackageContent('./test/assets/packages/package1.xml');
         } catch (error) {
             expect(error.message).toMatch('does not have a valid JSON content');
         }
         try {
-            content = PackageGenerator.createPackage('./test/assets/packages/package1.xml');
+            content = generator.createPackage('./test/assets/packages/package1.xml');
         } catch (error) {
             expect(error.message).toMatch('does not have a valid JSON content');
         }
         try {
-            content = PackageGenerator.createBeforeDeployDestructive('./test/assets/packages/package1.xml');
+            content = generator.createBeforeDeployDestructive('./test/assets/packages/package1.xml');
         } catch (error) {
             expect(error.message).toMatch('does not have a valid JSON content');
         }
         try {
-            content = PackageGenerator.createAfterDeployDestructive('./test/assets/packages/package1.xml');
+            content = generator.createAfterDeployDestructive('./test/assets/packages/package1.xml');
         } catch (error) {
             expect(error.message).toMatch('does not have a valid JSON content');
         }
     });
     test('Testing mergePackages()', () => {
-        let result = PackageGenerator.mergePackages(packages, './test/assets/merged', {
-            apiVersion: 50,
-            mergePackages: true,
-            mergeDestructives: false,
-            beforeDeploy: false,
-            explicit: false
-        });
+        const generator = new PackageGenerator(50);
+        generator.setMergePackagesFiles();
+        let result = generator.mergePackages(packages, './test/assets/merged');
         expect(result.package).toBeTruthy();
         expect(result.destructiveChanges).toBeTruthy();
         expect(result.destructiveChangesPost).toBeTruthy();
-        result = PackageGenerator.mergePackages(packages, './test/assets/merged', {
-            apiVersion: 50,
-            mergePackages: true,
-            mergeDestructives: true,
-            beforeDeploy: true,
-            explicit: false
-        });
+        generator.setMergeDestructives();
+        generator.setBeforeDeploy();
+        result = generator.mergePackages(packages, './test/assets/merged');
         expect(result.package).toBeTruthy();
         expect(result.destructiveChanges).toBeTruthy();
         expect(result.destructiveChangesPost).toBeFalsy();
-        result = PackageGenerator.mergePackages(packages, './test/assets/merged', {
-            apiVersion: 50,
-            mergePackages: true,
-            mergeDestructives: true,
-            beforeDeploy: false,
-            explicit: false
-        });
+        generator.setBeforeDeploy(false);
+        result = generator.mergePackages(packages, './test/assets/merged');
         expect(result.package).toBeTruthy();
         expect(result.destructiveChanges).toBeFalsy();
         expect(result.destructiveChangesPost).toBeTruthy();
-        result = PackageGenerator.mergePackages(packages, './test/assets/merged');
+        generator.setMergeDestructives(false);
+        result = generator.mergePackages(packages, './test/assets/merged');
         expect(result.package).toBeTruthy();
         expect(result.destructiveChanges).toBeTruthy();
         expect(result.destructiveChangesPost).toBeTruthy();
-        result = PackageGenerator.mergePackages(onlyPackages, './test/assets/merged', {
-            apiVersion: 50,
-            mergePackages: true,
-            mergeDestructives: false,
-            beforeDeploy: false,
-            explicit: false
-        });
+        result = generator.mergePackages(onlyPackages, './test/assets/merged');
         expect(result.package).toBeTruthy();
         expect(result.destructiveChanges).toBeFalsy();
         expect(result.destructiveChangesPost).toBeFalsy();
-        result = PackageGenerator.mergePackages(onlyBeforeDeploy, './test/assets/merged', {
-            apiVersion: 50,
-            mergeDestructives: false,
-            beforeDeploy: false,
-            explicit: false
-        });
+        result = generator.mergePackages(onlyBeforeDeploy, './test/assets/merged');
         expect(result.package).toBeFalsy();
         expect(result.destructiveChanges).toBeTruthy();
         expect(result.destructiveChangesPost).toBeFalsy();
-        result = PackageGenerator.mergePackages(onlyafterDeploy, './test/assets/merged', {
-            apiVersion: 50,
-            mergeDestructives: false,
-            beforeDeploy: false,
-            explicit: false
-        });
+        result = generator.mergePackages(onlyafterDeploy, './test/assets/merged');
         expect(result.package).toBeFalsy();
         expect(result.destructiveChanges).toBeFalsy();
         expect(result.destructiveChangesPost).toBeTruthy();
         try {
-            PackageGenerator.mergePackages({}, './test/assets/merged');
+            generator.mergePackages({}, './test/assets/merged');
         } catch (error) {
             expect(error.message).toMatch('Wrong file path. Expect a file path and receive');
         }
         try {
-            PackageGenerator.mergePackages(packages, {});
+            generator.mergePackages(packages, {});
         } catch (error) {
             expect(error.message).toMatch('Wrong Output path. Expect a folder path and receive');
         }
         try {
-            PackageGenerator.mergePackages('./test/assets/merged/assets', './test/assets/merged');
+            generator.mergePackages('./test/assets/merged/assets', './test/assets/merged');
         } catch (error) {
             expect(error.message).toMatch('does not exists or not have access to it');
         }
         try {
-            PackageGenerator.mergePackages('./test/assets/packages/noPackageFile.json', './test/assets/merged');
+            generator.mergePackages('./test/assets/packages/noPackageFile.json', './test/assets/merged');
         } catch (error) {
             expect(error.message).toMatch('Not package files (package) or destructive files (destructiveChanges, destructiveChangesPost) selected to merge');
         }
     });
     test('Testing mergePackagesFull()', () => {
-        let result = PackageGenerator.mergePackagesFull('./test/assets/packages/package3.xml', './test/assets/merged', {
-            apiVersion: 50,
-            isDestructive: false,
-            beforeDeploy: false,
-            explicit: false
-        });
+        const generator = new PackageGenerator(50);
+        let result = generator.mergePackagesFull('./test/assets/packages/package3.xml', './test/assets/merged');
         expect(result.package).toBeFalsy();
         expect(result.destructiveChanges).toBeFalsy();
         expect(result.destructiveChangesPost).toBeFalsy();
         try {
-            result = PackageGenerator.mergePackagesFull('./test/assets/packages/package4.xml', './test/assets/merged', {
-                apiVersion: 50,
-                isDestructive: false,
-                beforeDeploy: false,
-                explicit: false
-            });
+            result = generator.mergePackagesFull('./test/assets/packages/package4.xml', './test/assets/merged');
             expect(result.package).toBeFalsy();
             expect(result.destructiveChanges).toBeFalsy();
             expect(result.destructiveChangesPost).toBeFalsy();
         } catch (error) {
 
         }
-        result = PackageGenerator.mergePackagesFull(packages, './test/assets/fullMerged', {
-            apiVersion: 50,
-            isDestructive: false,
-            beforeDeploy: true,
-            explicit: false
-        });
+        generator.setBeforeDeploy();
+        result = generator.mergePackagesFull(packages, './test/assets/fullMerged');
         expect(result.package).toBeTruthy();
         expect(result.destructiveChanges).toBeFalsy();
         expect(result.destructiveChangesPost).toBeFalsy();
-        result = PackageGenerator.mergePackagesFull(packages, './test/assets/fullMerged', {
-            apiVersion: 50,
-            isDestructive: true,
-            beforeDeploy: true,
-            explicit: false
-        });
+        generator.setIsDestructive();
+        result = generator.mergePackagesFull(packages, './test/assets/fullMerged');
         expect(result.package).toBeFalsy();
         expect(result.destructiveChanges).toBeTruthy();
         expect(result.destructiveChangesPost).toBeFalsy();
-        result = PackageGenerator.mergePackagesFull(packages, './test/assets/fullMerged', {
-            apiVersion: 50,
-            isDestructive: true,
-            beforeDeploy: false,
-            explicit: false
-        });
+        generator.setBeforeDeploy(false);
+        result = generator.mergePackagesFull(packages, './test/assets/fullMerged');
         expect(result.package).toBeFalsy();
         expect(result.destructiveChanges).toBeFalsy();
         expect(result.destructiveChangesPost).toBeTruthy();
         try {
-            PackageGenerator.mergePackagesFull(packages, './test/assets/fullMergeds');
+            generator.mergePackagesFull(packages, './test/assets/fullMergeds');
         } catch (error) {
             expect(error.message).toMatch('does not exists or not have access to it');
         }
         try {
-            PackageGenerator.mergePackagesFull(packages, './test/assets/packages/package4.xml');
+            generator.mergePackagesFull(packages, './test/assets/packages/package4.xml');
         } catch (error) {
             expect(error.message).toMatch('is not a valid directory path');
         }
         try {
-            PackageGenerator.mergePackagesFull({}, './test/assets/fullMerged');
+            generator.mergePackagesFull({}, './test/assets/fullMerged');
         } catch (error) {
             expect(error.message).toMatch('Wrong file path. Expect a file path and receive');
         }
         try {
-            PackageGenerator.mergePackagesFull(packages, {});
+            generator.mergePackagesFull(packages, {});
         } catch (error) {
             expect(error.message).toMatch('Wrong Output path. Expect a folder path and receive');
         }
         try {
-            PackageGenerator.mergePackagesFull('./test/assets/fullMerged/assets', './test/assets/fullMerged');
+            generator.mergePackagesFull('./test/assets/fullMerged/assets', './test/assets/fullMerged');
         } catch (error) {
             expect(error.message).toMatch('does not exists or not have access to it');
         }
         try {
-            PackageGenerator.mergePackagesFull('./test/assets/packages/noPackageFile.json', './test/assets/fullMerged');
+            generator.mergePackagesFull('./test/assets/packages/noPackageFile.json', './test/assets/fullMerged');
         } catch (error) {
             expect(error.message).toMatch('Not package files (package) or destructive files (destructiveChanges, destructiveChangesPost) selected to merge');
         }
