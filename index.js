@@ -78,7 +78,7 @@ class PackageGenerator {
 
     /**
      * Method to set if merge package files
-     * @param {Boolean} mergePackageFiles true if want to merge the provided package files. If undefiend ot not has param, also set to true
+     * @param {Boolean} [mergePackageFiles] true if want to merge the provided package files. If undefiend ot not has param, also set to true
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
@@ -90,7 +90,7 @@ class PackageGenerator {
 
     /**
      * Method to set if merge destructive files
-     * @param {Boolean} mergeDestructives true if want to merge the provided destructive files into one single file. If undefiend ot not has param, also set to true
+     * @param {Boolean} [mergeDestructives] true if want to merge the provided destructive files into one single file. If undefiend ot not has param, also set to true
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
@@ -102,7 +102,7 @@ class PackageGenerator {
 
     /**
      * Method to set if merge all package and XML destructive files into one destructive file
-     * @param {Boolean} isDestructive true if you want to merge all files into one destructive file (valid option to merge packages full). If undefiend ot not has param, also set to true
+     * @param {Boolean} [isDestructive] true if you want to merge all files into one destructive file (valid option to merge packages full). If undefiend ot not has param, also set to true
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
@@ -113,7 +113,7 @@ class PackageGenerator {
 
     /**
      * Method to set if the destructive file to create is before deploy, in otherwise create destructive files after deploy
-     * @param {Boolean} beforeDeploy true if want to merge destructive files into before deploy destructive file when select mergeDestructives. If undefiend ot not has param, also set to true
+     * @param {Boolean} [beforeDeploy] true if want to merge destructive files into before deploy destructive file when select mergeDestructives. If undefiend ot not has param, also set to true
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
@@ -124,7 +124,7 @@ class PackageGenerator {
 
     /**
      * Method to set if put all elements explicit on the package XML or use wildcards when apply
-     * @param {Boolean} explicit true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
+     * @param {Boolean} [explicit] true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
