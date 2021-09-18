@@ -1,4 +1,4 @@
-const { XML } = require('@ah/languages');
+const { XML } = require('@aurahelper/languages');
 const XMLParser = XML.XMLParser;
 const XMLUtils = XML.XMLUtils;
 const { Validator, ProjectUtils, Utils } = require('@aurahelper/core').CoreUtils;
