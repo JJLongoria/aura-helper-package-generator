@@ -1,13 +1,13 @@
 const { XML } = require('@ah/languages');
 const XMLParser = XML.XMLParser;
 const XMLUtils = XML.XMLUtils;
-const { Validator, ProjectUtils, Utils } = require('@ah/core').CoreUtils;
-const { DataNotFoundException } = require('@ah/core').Exceptions;
-const { MetadataTypes } = require('@ah/core').Values;
-const { MetadataType, MetadataObject, MetadataItem, PackageGeneratorOptions, PackageGeneratorResult } = require('@ah/core').Types;
-const { FileReader, FileWriter, PathUtils } = require('@ah/core').FileSystem;
-const Ignore = require('@ah/ignore');
-const TypesFactory = require('@ah/metadata-factory');
+const { Validator, ProjectUtils, Utils } = require('@aurahelper/core').CoreUtils;
+const { DataNotFoundException } = require('@aurahelper/core').Exceptions;
+const { MetadataTypes } = require('@aurahelper/core').Values;
+const { MetadataType, MetadataObject, MetadataItem, PackageGeneratorResult } = require('@aurahelper/core').Types;
+const { FileReader, FileWriter, PathUtils } = require('@aurahelper/core').FileSystem;
+const Ignore = require('@aurahelper/ignore');
+const TypesFactory = require('@aurahelper/metadata-factory');
 
 const START_XML_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 const PACKAGE_TAG_START = "<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">";

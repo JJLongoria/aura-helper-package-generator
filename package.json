@@ -1,6 +1,7 @@
 {
-  "name": "@ah/package-generator",
+  "name": "@aurahelper/package-generator",
   "productName": "Aura Helper Package Generator",
+  "displayName": "Aura Helper Framework Package Generator",
   "version": "1.0.0",
   "description": "Aura Helper Package Generator Module to create Salesforce XML Package, to deploy, retrieve or delete elements on your Org. Support to create package from JSON File, Git Diffs or Mergin other packages.",
   "main": "index.js",
@@ -52,9 +53,9 @@
     "jest": "^26.6.3"
   },
   "dependencies": {
-    "@ah/core": "file:../ah-core",
-    "@ah/languages": "file:../ah-languages",
-    "@ah/ignore": "file:../ah-ignore",
-    "@ah/metadata-factory": "file:../ah-metadata-factory"
+    "@aurahelper/core": "^1.0.0",
+    "@aurahelper/languages": "^1.0.0",
+    "@aurahelper/metadata-factory": "^1.0.0",
+    "@aurahelper/ignore": "^1.0.0"
   }
 }
