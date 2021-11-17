@@ -424,8 +424,18 @@ function makeTypesBlock(metadataType, explicit) {
                         separator = '.';
                     }
                     if (mtItem.checked) {
-                        typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE
-                        addBlock = true;
+                        if(metadataType.name === MetadataTypes.QUICK_ACTION){
+                            if(mtObject.name === mtItem.name || mtObject.name === 'GlobalActions'){
+                                typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtItem.name + MEMBERS_TAG_END + NEWLINE
+                                addBlock = true;
+                            } else {
+                                typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE
+                                addBlock = true;
+                            }
+                        } else {
+                            typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE
+                            addBlock = true;
+                        }
                     }
                 });
             } else if (mtObject.checked) {
