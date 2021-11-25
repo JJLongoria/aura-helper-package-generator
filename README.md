@@ -58,35 +58,35 @@ The fields that start with _ are for internal use only (Does not modify this fie
 
 ### [**apiVersion**](#packagegenerator-fields-apiversion)
 True to remove ignored elements from the result object, false only for unselect elements 
-- String | Number
+- `String` | `Number`
 
 ### [**mergePackageFiles**](#packagegenerator-fields-mergepackagefiles)
 true if want to merge the provided package files. If undefiend ot not has param, also set to true
-- Boolean
+- `Boolean`
 
 ### [**mergeDestructives**](#packagegenerator-fields-mergedestructives)
 true if want to merge the provided destructive files into one single file. If undefiend ot not has param, also set to true
-- Boolean
+- `Boolean`
 
 ### [**isDestructive**](#packagegenerator-fields-isdestructive)
 true if you want to merge all files into one destructive file (valid option to merge packages full). If undefiend ot not has param, also set to true
-- Boolean
+- `Boolean`
 
 ### [**beforeDeploy**](#packagegenerator-fields-beforedeploy)
 true if want to merge destructive files into before deploy destructive file when select mergeDestructives. If undefiend ot not has param, also set to true
-- Boolean
+- `Boolean`
 
 ### [**explicit**](#packagegenerator-fields-explicit)
 true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
-- Boolean
+- `Boolean`
 
 ### [**ignoreFile**](#packagegenerator-fields-ignorefile)
 path to the ignore file to ignore some metadata types from the packages
-- String
+- `String`
 
 ### [**typesToIgnore**](#packagegenerator-fields-typestoignore)
 List with the Metadata Type API Names to ignore. This parameter is used to ignore only the specified metadata (also must be in ignore file) and avoid ignore all metadata types specified on the file.
-- Array\<String\>
+- `Array<String>`
 
 </br>
 
@@ -97,7 +97,7 @@ Constructor to instance a new PackageGenerator object. All parameters are option
 
 ### **Parameters:**
   - **apiVersion**: Path to the ignore file
-    - String | Number
+    - `String` | `Number`
 
 </br>
 
@@ -169,16 +169,16 @@ Method to Set the api version to create the packages
 
 ### **Parameters:**
   - **apiVersion**: Api version to create the package. If not provided use the latest api version of the provided files
-    - String | Number
+    - `String` | `Number`
 
 ### **Return:**
 Return the package generator instance
-- PackageGenerator
+- `PackageGenerator`
 
 ### **Examples:**
 
 **Set the api version**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
 
     const generator = new PackageGenerator();
@@ -186,7 +186,7 @@ Return the package generator instance
     generator.setApiVersion('50.0');
     generator.setApiVersion(50);
     generator.setApiVersion(50.0);
-
+```
 ---
 
 ## [**setMergePackagesFiles(mergePackageFiles)**](#setmergepackagesfilesmergepackagefiles)
@@ -194,22 +194,22 @@ Method to set if merge package files
 
 ### **Parameters:**
   - **mergePackageFiles**: true if want to merge the provided package files. If undefiend ot not has param, also set to true
-    - Boolean
+    - `Boolean`
 
 ### **Return:**
 Return the package generator instance
-- PackageGenerator
+- `PackageGenerator`
 
 ### **Examples:**
 
 **Set if merge package files**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
 
     const generator = new PackageGenerator();
     generator.setMergePackagesFiles(true);
     generator.setMergePackagesFiles();  // Also set to true
-
+```
 ---
 
 ## [**setMergeDestructives(mergeDestructives)**](#setmergedestructivesmergedestructives)
@@ -217,22 +217,22 @@ Method to set if merge destructive files
 
 ### **Parameters:**
   - **mergeDestructives**: true if want to merge the provided destructive files into one single file. If undefiend ot not has param, also set to true
-    - Boolean
+    - `Boolean`
 
 ### **Return:**
 Return the package generator instance
-- PackageGenerator
+- `PackageGenerator`
 
 ### **Examples:**
 
 **Set if merge destructive files**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
 
     const generator = new PackageGenerator();
     generator.setMergeDestructives(true);
     generator.setMergeDestructives();  // Also set to true
-
+```
 ---
 
 ## [**setIsDestructive(isDestructive)**](#setisdestructiveisdestructive)
@@ -240,22 +240,22 @@ Method to set if merge all package and XML destructive files into one destructiv
 
 ### **Parameters:**
   - **isDestructive**: true if you want to merge all files into one destructive
-    - Boolean
+    - `Boolean`
 
 ### **Return:**
 Return the package generator instance
-- PackageGenerator
+- `PackageGenerator`
 
 ### **Examples:**
 
 **Set if merge all package and destructive files into one destructive**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
 
     const generator = new PackageGenerator();
     generator.setIsDestructive(true);
     generator.setIsDestructive();  // Also set to true
-
+```
 ---
 
 ## [**setBeforeDeploy(beforeDeploy)**](#setbeforedeploybeforedeploy)
@@ -263,22 +263,22 @@ Method to set if the destructive file to create is before deploy, in otherwise c
 
 ### **Parameters:**
   - **beforeDeploy**: true if want to merge destructive files into before deploy destructive file when select mergeDestructives. If undefiend ot not has param, also set to true
-    - Boolean
+    - `Boolean`
 
 ### **Return:**
 Return the package generator instance
-- PackageGenerator
+- `PackageGenerator`
 
 ### **Examples:**
 
 **Set if merge all package and destructive files into one destructive**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
 
     const generator = new PackageGenerator();
     generator.setBeforeDeploy(true);
     generator.setBeforeDeploy();  // Also set to true
-
+```
 ---
 
 ## [**setExplicit(explicit)**](#setexplicitexplicit)
@@ -286,22 +286,22 @@ Method to set if put all elements explicit on the package XML or use wildcards w
 
 ### **Parameters:**
   - **explicit**: true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
-    - Boolean
+    - `Boolean`
 
 ### **Return:**
 Return the package generator instance
-- PackageGenerator
+- `PackageGenerator`
 
 ### **Examples:**
 
 **Set explicit**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
 
     const generator = new PackageGenerator();
     generator.setExplicit(true);
     generator.setExplicit();  // Also set to true
-
+```
 ---
 
 ## [**setIgnoreFile(ignoreFile)**](#setignorefileignorefile)
@@ -309,21 +309,21 @@ Method to set the path to the ignore file
 
 ### **Parameters:**
   - **ignoreFile**: path to the ignore file to ignore some metadata types from the packages
-    - Boolean
+    - `Boolean`
 
 ### **Return:**
 Return the package generator instance
-- PackageGenerator
+- `PackageGenerator`
 
 ### **Examples:**
 
 **Set file to ignore Metadata Types**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
 
     const generator = new PackageGenerator();
     generator.setIgnoreFile('path/to/the/ignore/file.json');
-
+```
 ---
 
 ## [**setTypesToIgnore(typesToIgnore)**](#settypestoignoretypestoignore)
@@ -331,47 +331,47 @@ Method to set the Metadata Types to ignore from package (Also must be exists on 
 
 ### **Parameters:**
   - **typesToIgnore**: List with the Metadata Type API Names to ignore. This parameter is used to ignore only the specified metadata (also must be in ignore file) and avoid ignore all metadata types specified on the file.
-    - Boolean
+    - `Boolean`
 
 ### **Return:**
 Return the package generator instance
-- PackageGenerator
+- `PackageGenerator`
 
 ### **Examples:**
 
 **Set Metadata Types to ignore**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
 
     const generator = new PackageGenerator();
     generator.setTypesToIgnore('CustomObject');
     generator.setTypesToIgnore(['CustomObject', 'CustomField']);
-
+```
 ---
 ## [**mergePackages(packageOrDestructiveFiles, outputFolder)**](#mergepackagespackageordestructivefiles-outputfolder)
 Method to merge several package xml files (including destructiveChanges.xml and destructiveChangesPost.xml files) to combine into one file of each type, combine all packages in one file and all detructives in another file.
 
 ### **Parameters:**
   - **packageOrDestructiveFiles**: File or list of files to merge (including package and destructive files in the same list)
-    - String | Array\<String\> 
+    - `String` | `Array<String> `
   - **outputFolder**: Folder to save the created files
-    - String
+    - `String`
 
 ### **Return:**
 Object with the merge result including the paths of the merged files
-- PackageGeneratorResult
+- `PackageGeneratorResult`
 
 ### **Throws:**
 This method can throw the next exceptions:
 
-- **WrongDatatypeException**: If api version is not a String or number (can be undefined)
-- **DataNotFoundException**: If not package or destructive files provided
-- **WrongFilePathException**: If the package or destructive files path is not a String or cant convert to absolute path
-- **FileNotFoundException**: If the package or destructive files path not exists or not have access to it
-- **InvalidFilePathException**: If the package or destructive files path is not a file
-- **WrongDirectoryPathException**: If the output Folder is not a String or cant convert to absolute path
-- **DirectoryNotFoundException**: If the directory not exists or not have access to it
-- **InvalidDirectoryPathException**: If the path is not a directory
+- **`WrongDatatypeException`**: If api version is not a String or number (can be undefined)
+- **`DataNotFoundException`**: If not package or destructive files provided
+- **`WrongFilePathException`**: If the package or destructive files path is not a String or cant convert to absolute path
+- **`FileNotFoundException`**: If the package or destructive files path not exists or not have access to it
+- **`InvalidFilePathException`**: If the package or destructive files path is not a file
+- **`WrongDirectoryPathException`**: If the output Folder is not a String or cant convert to absolute path
+- **`DirectoryNotFoundException`**: If the directory not exists or not have access to it
+- **`InvalidDirectoryPathException`**: If the path is not a directory
 
 ### **Examples:**
 You have several options to merge package files: 
@@ -379,7 +379,7 @@ You have several options to merge package files:
 **Merge files by Type**
 
 Merge all package XML file into one package XML file, merge all destructive changes pre deployment into one destructiveChanges XML and merge all destructive changes post deployment into one destructiveChangesPost XML.
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const filePaths = [
         '/test/package/package1.xml',                       // package.xml
@@ -399,11 +399,12 @@ Merge all package XML file into one package XML file, merge all destructive chan
     console.log(result.package);                    // [pathFromRoot]/path/to/the/output/folder/package.xml
     console.log(result.destructiveChanges);         // [pathFromRoot]/path/to/the/output/folder/destructiveChanges.xml
     console.log(result.destructiveChangesPost);     // [pathFromRoot]/path/to/the/output/folder/destructiveChangesPost.xml
-
+```
 **Merge all destructive XML files post deployment**
 
 Merge all package XML file into one package XML file and merge all destructive changes pre and post deployment into one destructiveChanges XML post deployment. 
 
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const filePaths = [
         '/test/package/package1.xml',                       // package.xml
@@ -424,11 +425,12 @@ Merge all package XML file into one package XML file and merge all destructive c
     console.log(result.package);                    // [pathFromRoot]/path/to/the/output/folder/package.xml
     console.log(result.destructiveChanges);         // undefined    (By default, create destructives after deploy)
     console.log(result.destructiveChangesPost);     // [pathFromRoot]/path/to/the/output/folder/destructiveChangesPost.xml
-
+```
 **Merge all destructive XML files pre deployment**
 
 Merge all package XML file into one package XML file and merge all destructive changes pre and post deployment into one destructiveChanges XML pre deployment.
 
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const filePaths = [
         '/test/package/package1.xml',                       // package.xml
@@ -449,31 +451,32 @@ Merge all package XML file into one package XML file and merge all destructive c
     console.log(result.package);                    // [pathFromRoot]/path/to/the/output/folder/package.xml
     console.log(result.destructiveChanges);         // [pathFromRoot]/path/to/the/output/folder/destructiveChanges.xml
     console.log(result.destructiveChangesPost);     // undefined
+```
 ---
 ## [**mergePackagesFull(packageOrDestructiveFiles, outputFolder)**](#mergepackagesfullpackageordestructivefiles-outputfolder)
 Method to merge all provided files into only one file. You can choose if merge all into a package.xml, destructiveChanges.xml or destructiveChangesPost.xml
 
 ### **Parameters:**
   - **packageOrDestructiveFiles**: File or list of files to merge (including package and destructive files in the same list)
-    - String | Array\<String\> 
+    - `String` | `Array<String>` 
   - **outputFolder**: Folder to save the created files
-    - String
+    - `String`
 
 ### **Return:**
 Object with the merge result including the paths of the merged files
-- PackageGeneratorResult
+- `PackageGeneratorResult`
 
 ### **Throws:**
 This method can throw the next exceptions:
 
-- **WrongDatatypeException**: If api version is not a String or number (can be undefined)
-- **DataNotFoundException**: If not package or destructive files provided
-- **WrongFilePathException**: If the package or destructive files path is not a String or cant convert to absolute path
-- **FileNotFoundException**: If the package or destructive files path not exists or not have access to it
-- **InvalidFilePathException**: If the package or destructive files path is not a file
-- **WrongDirectoryPathException**: If the output Folder is not a String or cant convert to absolute path
-- **DirectoryNotFoundException**: If the directory not exists or not have access to it
-- **InvalidDirectoryPathException**: If the path is not a directory
+- **`WrongDatatypeException`**: If api version is not a String or number (can be undefined)
+- **`DataNotFoundException`**: If not package or destructive files provided
+- **`WrongFilePathException`**: If the package or destructive files path is not a String or cant convert to absolute path
+- **`FileNotFoundException`**: If the package or destructive files path not exists or not have access to it
+- **`InvalidFilePathException`**: If the package or destructive files path is not a file
+- **`WrongDirectoryPathException`**: If the output Folder is not a String or cant convert to absolute path
+- **`DirectoryNotFoundException`**: If the directory not exists or not have access to it
+- **`InvalidDirectoryPathException`**: If the path is not a directory
 
 ### **Examples:**
 You have several options to merge full package files: 
@@ -482,6 +485,7 @@ You have several options to merge full package files:
 
 Merge all package XML, all destructiveChanges XML and all destructiveChangesPost XML files into one package XML file.
 
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const filePaths = [
         '/test/package/package1.xml',                       // package.xml
@@ -501,11 +505,12 @@ Merge all package XML, all destructiveChanges XML and all destructiveChangesPost
     console.log(result.package);                    // [pathFromRoot]/path/to/the/output/folder/package.xml
     console.log(result.destructiveChanges);         // undefined
     console.log(result.destructiveChangesPost);     // undefined
-
+```
 **Full Merge into Destructive XML post deployment**
 
 Merge all package XML, all destructiveChanges XML and all destructiveChangesPost XML files into one destructiveChangesPost XML file.
 
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const filePaths = [
         '/test/package/package1.xml',                       // package.xml
@@ -526,11 +531,12 @@ Merge all package XML, all destructiveChanges XML and all destructiveChangesPost
     console.log(result.package);                    // undefined
     console.log(result.destructiveChanges);         // undefined        (By default, create destructives after deploy)
     console.log(result.destructiveChangesPost);     // [pathFromRoot]/path/to/the/output/folder/destructiveChangesPost.xml
-
+```
 **Full Merge into Destructive XML pre deployment**
 
 Merge all package XML, all destructiveChanges XML and all destructiveChangesPost XML files into one destructiveChanges XML file.
 
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const filePaths = [
         '/test/package/package1.xml',                       // package.xml
@@ -555,35 +561,37 @@ Merge all package XML, all destructiveChanges XML and all destructiveChangesPost
     console.log(result.package);                    // undefined
     console.log(result.destructiveChanges);         // [pathFromRoot]/path/to/the/output/folder/destructiveChanges.xml
     console.log(result.destructiveChangesPost);     // undefined
+
+```
 ---
 ## [**getPackageContent(metadataOrPath)**](#getpackagecontentmetadataorpath)
 Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to get the package or destructive XML content.
-    - String | Object
+    - `String` | `Object`
 
 ### **Return:**
 Returns an String with the XML content
-- String
+- `String`
 
 ### **Throws:**
 This method can throw the next exceptions:
 
-- **WrongDatatypeException**: If api version is not a String or number (can be undefined)
-- **WrongFilePathException**: If the package or destructive files path is not a String or cant convert to absolute path
-- **FileNotFoundException**: If the package or destructive files path not exists or not have access to it
-- **InvalidFilePathException**: If the package or destructive files path is not a file
-- **WrongDirectoryPathException**: If the output Folder is not a String or cant convert to absolute path
-- **DirectoryNotFoundException**: If the directory not exists or not have access to it
-- **InvalidDirectoryPathException**: If the path is not a directory
-- **WrongFormatException**: If file is not a JSON file or not have the correct Metadata JSON format
+- **`WrongDatatypeException`**: If api version is not a String or number (can be undefined)
+- **`WrongFilePathException`**: If the package or destructive files path is not a String or cant convert to absolute path
+- **`FileNotFoundException`**: If the package or destructive files path not exists or not have access to it
+- **`InvalidFilePathException`**: If the package or destructive files path is not a file
+- **`WrongDirectoryPathException`**: If the output Folder is not a String or cant convert to absolute path
+- **`DirectoryNotFoundException`**: If the directory not exists or not have access to it
+- **`InvalidDirectoryPathException`**: If the path is not a directory
+- **`WrongFormatException`**: If file is not a JSON file or not have the correct Metadata JSON format
 
 ### **Examples:**
 You have several options to get Package XML Content: 
 
 **Get the package XML Content from Metadata JSON File**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
 
@@ -594,10 +602,10 @@ You have several options to get Package XML Content:
     console.log(xmlResultFromFile);                    // <?xml version="1.0" encoding="UTF-8"?>
                                                        // <Package xmlns="http://soap.sforce.com/2006/04/metadata">
                                                        // ...
-
+```
 
 **Get the package XML Content from Metadata JSON Object**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
 
@@ -609,37 +617,38 @@ You have several options to get Package XML Content:
     console.log(xmlResultFromJSON);                    // <?xml version="1.0" encoding="UTF-8"?>
                                                        // <Package xmlns="http://soap.sforce.com/2006/04/metadata">
                                                        // ...
+```
 ---
 ## [**createPackage(metadataOrPath, outputFolder)**](#createpackagemetadataorpath-outputfolder)
 Method to create a package XML file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to create the package file.
-    - String | Object
+    - `String` | `Object`
   - **outputFolder**: Folder to save the created file
-    - String
+    - `String`
 
 ### **Return:**
 Returns the path to the created file
-- String
+- `String`
 
 ### **Throws:**
 This method can throw the next exceptions:
 
-- **WrongDatatypeException**: If api version is not a String or number (can be undefined)
-- **WrongFilePathException**: If the package or destructive files path is not a String or cant convert to absolute path
-- **FileNotFoundException**: If the package or destructive files path not exists or not have access to it
-- **InvalidFilePathException**: If the package or destructive files path is not a file
-- **WrongDirectoryPathException**: If the output Folder is not a String or cant convert to absolute path
-- **DirectoryNotFoundException**: If the directory not exists or not have access to it
-- **InvalidDirectoryPathException**: If the path is not a directory
-- **WrongFormatException**: If file is not a JSON file or not have the correct Metadata JSON format
+- **`WrongDatatypeException`**: If api version is not a String or number (can be undefined)
+- **`WrongFilePathException`**: If the package or destructive files path is not a String or cant convert to absolute path
+- **`FileNotFoundException`**: If the package or destructive files path not exists or not have access to it
+- **`InvalidFilePathException`**: If the package or destructive files path is not a file
+- **`WrongDirectoryPathException`**: If the output Folder is not a String or cant convert to absolute path
+- **`DirectoryNotFoundException`**: If the directory not exists or not have access to it
+- **`InvalidDirectoryPathException`**: If the path is not a directory
+- **`WrongFormatException`**: If file is not a JSON file or not have the correct Metadata JSON format
 
 ### **Examples:**
 You have several options to create the XML Package file: 
 
 **Create Package XML from Metadata JSON File**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     
     const jsonFilePath = 'path/to/json/metadata.json';
@@ -650,9 +659,9 @@ You have several options to create the XML Package file:
     const packageFromFileResult = generator.createPackage(jsonFilePath, outputFolder);
 
     console.log(packageFromFileResult);            // [rootPath]/path/to/json/package.xml
-
+```
 **Create Package XML from Metadata JSON Object**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     
     const jsonFilePath = 'path/to/json/metadata.json';
@@ -664,37 +673,38 @@ You have several options to create the XML Package file:
     const packageFromJSONObjectResult = generator.createPackage(jsonContent, outputFolder);
 
     console.log(packageFromJSONObjectResult);        // [rootPath]/path/to/json/package.xml
+```
 ---
 ## [**createBeforeDeployDestructive(metadataOrPath, outputFolder)**](#createbeforedeploydestructivemetadataorpath-outputfolder)
 Method to create a before deploy destructive file with the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to create the destructive file.
-    - String | Object
+    - `String` | `Object`
   - **outputFolder**: Folder to save the created file
-    - String
+    - `String`
 
 ### **Return:**
 Returns the path to the created file
-- String
+- `String`
 
 ### **Throws:**
 This method can throw the next exceptions:
 
-- **WrongDatatypeException**: If api version is not a String or number (can be undefined)
-- **WrongFilePathException**: If the package or destructive files path is not a String or cant convert to absolute path
-- **FileNotFoundException**: If the package or destructive files path not exists or not have access to it
-- **InvalidFilePathException**: If the package or destructive files path is not a file
-- **WrongDirectoryPathException**: If the output Folder is not a String or cant convert to absolute path
-- **DirectoryNotFoundException**: If the directory not exists or not have access to it
-- **InvalidDirectoryPathException**: If the path is not a directory
-- **WrongFormatException**: If file is not a JSON file or not have the correct Metadata JSON format
+- **`WrongDatatypeException`**: If api version is not a String or number (can be undefined)
+- **`WrongFilePathException`**: If the package or destructive files path is not a String or cant convert to absolute path
+- **`FileNotFoundException`**: If the package or destructive files path not exists or not have access to it
+- **`InvalidFilePathException`**: If the package or destructive files path is not a file
+- **`WrongDirectoryPathException`**: If the output Folder is not a String or cant convert to absolute path
+- **`DirectoryNotFoundException`**: If the directory not exists or not have access to it
+- **`InvalidDirectoryPathException`**: If the path is not a directory
+- **`WrongFormatException`**: If file is not a JSON file or not have the correct Metadata JSON format
 
 ### **Examples:**
 You have several options to create the XML before destructive file: 
 
 **Create Destructive Changes XML before deploy from Metadata JSON File**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
@@ -704,9 +714,9 @@ You have several options to create the XML before destructive file:
     const packageFromFileResult = generator.createBeforeDeployDestructive(jsonFilePath, outputFolder);
 
     console.log(packageFromFileResult);          // [rootPath]/path/to/json/destructiveChanges.xml
-
+```
 **Create Destructive Changes XML before deploy from Metadata JSON Object**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
@@ -717,6 +727,7 @@ You have several options to create the XML before destructive file:
     const packageFromJSONObjectResult = generator.createBeforeDeployDestructive(jsonContent, outputFolder);
 
     console.log(packageFromJSONObjectResult);          // [rootPath]/path/to/json/destructiveChanges.xml
+```
 ---
 
 ## [**createAfterDeployDestructive(metadataOrPath, outputFolder)**](#createafterdeploydestructivemetadataorpath-outputfolder)
@@ -724,31 +735,31 @@ Method to create an after deploy destructive file with the selected Metadata JSO
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to create the destructive file.
-    - String | Object
+    - `String` | `Object`
   - **outputFolder**: Folder to save the created file
-    - String
+    - `String`
 
 ### **Return:**
 Returns the path to the created file
-- String
+- `String`
 
 ### **Throws:**
 This method can throw the next exceptions:
 
-- **WrongDatatypeException**: If api version is not a String or number (can be undefined)
-- **WrongFilePathException**: If the package or destructive files path is not a String or cant convert to absolute path
-- **FileNotFoundException**: If the package or destructive files path not exists or not have access to it
-- **InvalidFilePathException**: If the package or destructive files path is not a file
-- **WrongDirectoryPathException**: If the output Folder is not a String or cant convert to absolute path
-- **DirectoryNotFoundException**: If the directory not exists or not have access to it
-- **InvalidDirectoryPathException**: If the path is not a directory
-- **WrongFormatException**: If file is not a JSON file or not have the correct Metadata JSON format
+- **`WrongDatatypeException`**: If api version is not a String or number (can be undefined)
+- **`WrongFilePathException`**: If the package or destructive files path is not a String or cant convert to absolute path
+- **`FileNotFoundException`**: If the package or destructive files path not exists or not have access to it
+- **`InvalidFilePathException`**: If the package or destructive files path is not a file
+- **`WrongDirectoryPathException`**: If the output Folder is not a String or cant convert to absolute path
+- **`DirectoryNotFoundException`**: If the directory not exists or not have access to it
+- **`InvalidDirectoryPathException`**: If the path is not a directory
+- **`WrongFormatException`**: If file is not a JSON file or not have the correct Metadata JSON format
 
 ### **Examples:**
 You have several options to create the XML after destructive file:
 
 **Create Destructive Changes XML after deploy from Metadata JSON File**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
@@ -758,9 +769,9 @@ You have several options to create the XML after destructive file:
     const packageFromFileResult = generator.createAfterDeployDestructive(jsonFilePath, outputFolder);
 
     console.log(packageFromFileResult);          // [rootPath]/path/to/json/destructiveChangesPost.xml
-
+```
 **Create Destructive Changes XML after deploy from Metadata JSON Object**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const jsonFilePath = 'path/to/json/metadata.json';
     const outputFolder = 'path/to/the/output/folder';
@@ -771,31 +782,33 @@ You have several options to create the XML after destructive file:
     const packageFromJSONObjectResult = generator.createAfterDeployDestructive(jsonContent, outputFolder);
 
     console.log(packageFromJSONObjectResult);          // [rootPath]/path/to/json/destructiveChangesPost.xml
+```
 ---
 ## [**validateJSON(metadataOrPath)**](#validatejsonmetadataorpath)
 Static Method to validate a Metadata JSON file or Metadata JSON Object format. If is not valid, throw several exceptions. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format 
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to validate.
-    - String | Object 
+    - `String` | `Object` 
 
 ### **Return:**
 Returns the Metadata Object Content validated
-- Object
+- `Object`
 
 ### **Throws:**
 This method can throw the next exceptions:
 
-- **WrongFilePathException**: If the package or destructive files path is not a String or cant convert to absolute path
-- **FileNotFoundException**: If the package or destructive files path not exists or not have access to it
-- **InvalidFilePathException**: If the package or destructive files path is not a file
-- **WrongFormatException**: If file is not a JSON file or not have the correct Metadata JSON format
+- **`WrongFilePathException`**: If the package or destructive files path is not a String or cant convert to absolute path
+- **`FileNotFoundException`**: If the package or destructive files path not exists or not have access to it
+- **`InvalidFilePathException`**: If the package or destructive files path is not a file
+- **`WrongFormatException`**: If file is not a JSON file or not have the correct Metadata JSON format
 
 ### **Example:**
 **Create and Validate your own JSON File**
 
 You can create your own JSON file to create package files and handle metadata types easy with the MetadataType, MetadataObject and MetadataItem classes from [@aurahelper/core](https://github.com/JJLongoria/aura-helper-core). See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format 
 
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     const { MetadataType, MetadataObject, MetadataItem } = require('@aurahelper/core').Types;
 
@@ -846,13 +859,13 @@ You can create your own JSON file to create package files and handle metadata ty
         // JSON is not valid
         console.log(error.message);     // Description about the error
     }
-
+```
 # [**Ignore metadata from your package**](#ignore-metadata-from-your-package)
 All methods to create or merge package or destructive XML files has two important options to ignore XML files. To ignore files, you need to create a .ahignore.json file (the name can be different) with the format specified on [Ignore File](#ignore-file) section.
 
 ### **Examples**:
 **Ignore Metadata from a Metadata JSON file when create a package**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     
     const jsonFilePath = 'path/to/json/metadata.json';
@@ -864,9 +877,9 @@ All methods to create or merge package or destructive XML files has two importan
     const packageFromFileResult = generator.createPackage(jsonFilePath, outputFolder);
 
     console.log(packageFromFileResult);                    // [rootPath]/path/to/json/package.xml
-
+```
 **Ignore Metadata from a Metadata JSON Object when create a package**
-
+```javascript
     const PackageGenerator = require('@aurahelper/package-generator');
     
     const jsonFilePath = 'path/to/json/metadata.json';
@@ -879,11 +892,12 @@ All methods to create or merge package or destructive XML files has two importan
     const packageFromJSONObjectResult = PackageGenerator.createPackage(jsonContent, outputFolder);
 
     console.log(packageFromJSONObjectResult);                    // [rootPath]/path/to/json/package.xml
-
+```
 # [**Metadata JSON Format**](#metadata-file)
 
 The Metadata JSON Format used by Aura Helper Framework and modules have the next structure. Some fields are required and the datatypes checked to ensure the correct file structure. 
 
+```json
     {
         "MetadataAPIName": {
             "name": "MetadataAPIName",                                  // Required (String). Contains the Metadata Type API Name (like object Key)
@@ -919,8 +933,10 @@ The Metadata JSON Format used by Aura Helper Framework and modules have the next
         }
     }
 
+```
 ### **Example**:
 
+```json
     {
         "CustomObject": {
             "name": "CustomObject",
@@ -988,12 +1004,15 @@ The Metadata JSON Format used by Aura Helper Framework and modules have the next
         }
     }
 
+```
+
 # [**Ignore File**](#ignore-file)
 
 The ignore file is a JSON file used on ignore, create package or repair dependencies modules. On this file you can specify metadata types, objects and elements for ignore or delete from your local project or package files. You can have a main ignore file on your root project (like gitignore) named .ahignore.json for use automatically, or have different ignore files and specify it on the commands when you need tou use.
 
 The ignore file have the next structure
 
+```json
     {
         // Basic structure
         "MetadataTypeAPIName": {
@@ -1018,8 +1037,11 @@ The ignore file have the next structure
         }
     }
 
+```
+
 ### **Example**:
 
+```javascript
     {
         "CustomLabels": {
             "labelName1",                   // Ignore or remove the custom label "labelName1"
@@ -1059,6 +1081,8 @@ The ignore file have the next structure
             "*"                             // Ignore or remove all profiles
         }
     }
+
+```
 
 #### **IMPORTANT**
 
