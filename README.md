@@ -1,4 +1,13 @@
 # **Aura Helper Package Generator Module**
+
+[![Version](https://img.shields.io/npm/v/@aurahelper/package-generator?logo=npm)](https://www.npmjs.com/package/@aurahelper/package-generator)
+[![Total Downloads](https://img.shields.io/npm/dt/@aurahelper/package-generator?logo=npm)](https://www.npmjs.com/package/@aurahelper/package-generator)
+[![Downloads/Month](https://img.shields.io/npm/dm/@aurahelper/package-generator?logo=npm)](https://www.npmjs.com/package/@aurahelper/package-generator)
+[![Issues](https://img.shields.io/github/issues/jjlongoria/aura-helper-package-generator)](https://github.com/JJLongoria/aura-helper-package-generator/issues)
+[![Known Vulnerabilities](https://snyk.io/test/github/JJLongoria/aura-helper-package-generator/badge.svg)](https://snyk.io/test/github/JJLongoria/aura-helper-package-generator)
+[![Code Size](https://img.shields.io/github/languages/code-size/jjlongoria/aura-helper-package-generator)](https://github.com/JJLongoria/aura-helper-package-generator)
+[![License](https://img.shields.io/github/license/jjlongoria/aura-helper-package-generator?logo=github)](https://github.com/JJLongoria/aura-helper-package-generator/blob/master/LICENSE)
+
 Aura Helper Package Generator Module contains a powerfull class to create and merge package files to deploy, retrieve or delete metadata from your Salesforce's projects.
 
 You can choose to merge several package xml files (including destructiveChanges.xml and destructiveChangesPost.xml files) to combine into one file of each type, combine all packages in one file and all detructives in another file or merge all files into one package or destructive file.
