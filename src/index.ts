@@ -380,7 +380,7 @@ export class PackageGenerator {
 
     /**
      * Method to validate a Metadata JSON file or Metadata JSON Object format. If is not valid, throw several exceptions.
-     * @param {string | { [key: string]: MetadataType }} metadataOrPath Metadata JSON file or Metadata JSON object to validate
+     * @param {string | any} metadataOrPath Metadata JSON file or Metadata JSON object to validate
      * 
      * @throws {WrongFilePathException} If the filePath is not a string or cant convert to absolute path
      * @throws {FileNotFoundException} If the file not exists or not have access to it
@@ -389,7 +389,7 @@ export class PackageGenerator {
      * 
      * @returns {{ [key: string]: MetadataType }} Returns the Metadata Object Content validated
      */
-    static validateJSON(metadataOrPath: string | { [key: string]: MetadataType }): { [key: string]: MetadataType } {
+    static validateJSON(metadataOrPath: string | any): { [key: string]: MetadataType } {
         return MetadataFactory.deserializeMetadataTypes(Validator.validateMetadataJSON(metadataOrPath));
     }
 }
