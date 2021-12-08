@@ -1,13 +1,12 @@
-const { XML } = require('@aurahelper/languages');
-const XMLParser = XML.XMLParser;
+import { XML } from '@aurahelper/languages';
+import { MetadataTypes, CoreUtils, FileWriter, FileReader, MetadataType, MetadataObject, MetadataItem, PackageGeneratorResult, PathUtils, DataNotFoundException } from "@aurahelper/core";
+import { ProjectUtils } from '@aurahelper/core/dist/utils';
+import { MetadataFactory } from '@aurahelper/metadata-factory';
+import { Ignore } from '@aurahelper/ignore';
 const XMLUtils = XML.XMLUtils;
-const { Validator, ProjectUtils, Utils } = require('@aurahelper/core').CoreUtils;
-const { DataNotFoundException } = require('@aurahelper/core').Exceptions;
-const { MetadataTypes } = require('@aurahelper/core').Values;
-const { MetadataType, MetadataObject, MetadataItem, PackageGeneratorResult } = require('@aurahelper/core').Types;
-const { FileReader, FileWriter, PathUtils } = require('@aurahelper/core').FileSystem;
-const Ignore = require('@aurahelper/ignore');
-const TypesFactory = require('@aurahelper/metadata-factory');
+const XMLParser = XML.XMLParser;
+const Utils = CoreUtils.Utils;
+const Validator = CoreUtils.Validator;
 
 const START_XML_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 const PACKAGE_TAG_START = "<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">";
@@ -27,7 +26,7 @@ const PACKAGE_FILENAME = 'package.xml';
 const DESTRUCT_BEFORE_NO_EXT = 'destructiveChanges';
 const DESTRUCT_AFTER_NO_EXT = 'destructiveChangesPost';
 const PACKAGE_NO_EXT = 'package';
-const NOT_ALLOWED_WILDCARDS = [
+const NOT_ALLOWED_WILDCARDS: string[] = [
 
 ];
 
@@ -48,13 +47,22 @@ const NOT_ALLOWED_WILDCARDS = [
  * 
  * The setters methods are defined like a builder pattern to make it more usefull
  */
-class PackageGenerator {
+export class PackageGenerator {
+
+    apiVersion?: string | number;
+    mergePackageFiles: boolean;
+    mergeDestructives: boolean;
+    isDestructive: boolean;
+    beforeDeploy: boolean;
+    explicit: boolean;
+    ignoreFile?: string;
+    typesToIgnore?: string[];
 
     /**
      * Constructor to instance a new PackageGenerator object
-     * @param {String | Number} [apiVersion] Api version to create the package. If not provided use the latest api version of the provided files
+     * @param {string | number} [apiVersion] Api version to create the package. If not provided use the latest api version of the provided files
      */
-    constructor(apiVersion) {
+    constructor(apiVersion?: string | number) {
         this.apiVersion = apiVersion;
         this.mergePackageFiles = true;
         this.mergeDestructives = false;
@@ -67,22 +75,22 @@ class PackageGenerator {
 
     /**
      * Method to Set the api version to create the packages
-     * @param {String | Number} apiVersion Api version to create the package. If not provided use the latest api version of the provided files
+     * @param {string | number} apiVersion Api version to create the package. If not provided use the latest api version of the provided files
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
-    setApiVersion(apiVersion) {
+    setApiVersion(apiVersion: string | number): PackageGenerator {
         this.apiVersion = apiVersion;
         return this;
     }
 
     /**
      * Method to set if merge package files
-     * @param {Boolean} [mergePackageFiles] true if want to merge the provided package files. If undefiend ot not has param, also set to true
+     * @param {boolean} [mergePackageFiles] true if want to merge the provided package files. If undefiend ot not has param, also set to true
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
-    setMergePackagesFiles(mergePackageFiles) {
+    setMergePackagesFiles(mergePackageFiles?: boolean): PackageGenerator {
         this.mergePackageFiles = (mergePackageFiles !== undefined && Utils.isBoolean(mergePackageFiles)) ? mergePackageFiles : true;
         return this;
     }
@@ -90,11 +98,11 @@ class PackageGenerator {
 
     /**
      * Method to set if merge destructive files
-     * @param {Boolean} [mergeDestructives] true if want to merge the provided destructive files into one single file. If undefiend ot not has param, also set to true
+     * @param {boolean} [mergeDestructives] true if want to merge the provided destructive files into one single file. If undefiend ot not has param, also set to true
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
-    setMergeDestructives(mergeDestructives) {
+    setMergeDestructives(mergeDestructives?: boolean): PackageGenerator {
         this.mergeDestructives = (mergeDestructives !== undefined && Utils.isBoolean(mergeDestructives)) ? mergeDestructives : true;
         return this;
     }
@@ -102,83 +110,85 @@ class PackageGenerator {
 
     /**
      * Method to set if merge all package and XML destructive files into one destructive file
-     * @param {Boolean} [isDestructive] true if you want to merge all files into one destructive file (valid option to merge packages full). If undefiend ot not has param, also set to true
+     * @param {boolean} [isDestructive] true if you want to merge all files into one destructive file (valid option to merge packages full). If undefiend ot not has param, also set to true
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
-    setIsDestructive(isDestructive) {
+    setIsDestructive(isDestructive?: boolean): PackageGenerator {
         this.isDestructive = (isDestructive !== undefined && Utils.isBoolean(isDestructive)) ? isDestructive : true;
         return this;
     }
 
     /**
      * Method to set if the destructive file to create is before deploy, in otherwise create destructive files after deploy
-     * @param {Boolean} [beforeDeploy] true if want to merge destructive files into before deploy destructive file when select mergeDestructives. If undefiend ot not has param, also set to true
+     * @param {boolean} [beforeDeploy] true if want to merge destructive files into before deploy destructive file when select mergeDestructives. If undefiend ot not has param, also set to true
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
-    setBeforeDeploy(beforeDeploy) {
+    setBeforeDeploy(beforeDeploy?: boolean): PackageGenerator {
         this.beforeDeploy = (beforeDeploy !== undefined && Utils.isBoolean(beforeDeploy)) ? beforeDeploy : true;
         return this;
     }
 
     /**
      * Method to set if put all elements explicit on the package XML or use wildcards when apply
-     * @param {Boolean} [explicit] true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
+     * @param {boolean} [explicit] true if you want to put all metadata types explicit into the file, false to use wildcards when are all checked
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
-    setExplicit(explicit) {
+    setExplicit(explicit?: boolean): PackageGenerator {
         this.explicit = (explicit !== undefined && Utils.isBoolean(explicit)) ? explicit : true;
         return this;
     }
 
     /**
      * Method to set the path to the ignore file
-     * @param {String} ignoreFile path to the ignore file to ignore some metadata types from the packages
+     * @param {string} ignoreFile path to the ignore file to ignore some metadata types from the packages
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
-    setIgnoreFile(ignoreFile) {
+    setIgnoreFile(ignoreFile: string): PackageGenerator {
         this.ignoreFile = ignoreFile;
         return this;
     }
 
     /**
      * Method to set the Metadata Types to ignore from package (Also must be exists on ignore file)
-     * @param {Object} typesToIgnore List with the Metadata Type API Names to ignore. This parameter is used to ignore only the specified metadata (also must be in ignore file) and avoid ignore all metadata types specified on the file.
+     * @param {string | string[]} typesToIgnore List with the Metadata Type API Names to ignore. This parameter is used to ignore only the specified metadata (also must be in ignore file) and avoid ignore all metadata types specified on the file.
      * 
      * @returns {PackageGenerator} Return the package generator instance
      */
-    setTypesToIgnore(typesToIgnore) {
-        this.typesToIgnore = typesToIgnore ? Utils.forceArray(typesToIgnore) : typesToIgnore;
+    setTypesToIgnore(typesToIgnore: string | string[]): PackageGenerator {
+        this.typesToIgnore = Utils.forceArray(typesToIgnore) as string[];
         return this;
     }
 
     /**
      * Method to merge several package xml files (including destructiveChanges.xml and destructiveChangesPost.xml files) to combine into one file of each type, combine all packages in one file and all detructives in another file.
-     * @param {String | Array<String>} packageOrDestructiveFiles File or list of files to merge (including package and destructive files in the same list)
-     * @param {String} outputFolder Folder to save the created files
+     * @param {string | string[]} packageOrDestructiveFiles File or list of files to merge (including package and destructive files in the same list)
+     * @param {string} outputFolder Folder to save the created files
      * 
      * @returns {PackageGeneratorResult} Object with the merge result including the paths of the merged files
      * 
-     * @throws {WrongDatatypeException} If api version is not a String or number (can be undefined)
+     * @throws {WrongDatatypeException} If api version is not a string or number (can be undefined)
      * @throws {DataNotFoundException} If not package or destructive files provided
-     * @throws {WrongFilePathException} If the package or destructive files path is not a String or cant convert to absolute path
+     * @throws {WrongFilePathException} If the package or destructive files path is not a string or cant convert to absolute path
      * @throws {FileNotFoundException} If the package or destructive files path not exists or not have access to it
      * @throws {InvalidFilePathException} If the package or destructive files path is not a file
-     * @throws {WrongDirectoryPathException} If the output Folder is not a String or cant convert to absolute path
+     * @throws {WrongDirectoryPathException} If the output Folder is not a string or cant convert to absolute path
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    mergePackages(packageOrDestructiveFiles, outputFolder) {
-        if (this.apiVersion)
+    mergePackages(packageOrDestructiveFiles: string | string[], outputFolder: string): PackageGeneratorResult {
+        if (this.apiVersion) {
             this.apiVersion = ProjectUtils.getApiAsNumber(this.apiVersion);
-        if (this.mergePackageFiles === undefined)
+        }
+        if (this.mergePackageFiles === undefined) {
             this.mergePackageFiles = true;
+        }
         const packages = [];
-        let beforeDestructivePackages = [];
-        let afterDestructivePackages = [];
+        let beforeDestructivePackages: string[] = [];
+        let afterDestructivePackages: string[] = [];
         packageOrDestructiveFiles = XMLUtils.forceArray(packageOrDestructiveFiles);
         for (let file of packageOrDestructiveFiles) {
             file = Validator.validateFilePath(file);
@@ -200,44 +210,45 @@ class PackageGenerator {
                 }
             }
         }
-        if (packages.length === 0 && beforeDestructivePackages.length === 0 && afterDestructivePackages.length === 0)
+        if (packages.length === 0 && beforeDestructivePackages.length === 0 && afterDestructivePackages.length === 0) {
             throw new DataNotFoundException('Not package files (' + PACKAGE_NO_EXT + ') or destructive files (' + DESTRUCT_BEFORE_NO_EXT + ', ' + DESTRUCT_AFTER_NO_EXT + ') selected to merge');
+        }
         const mergedPackage = mergePackageFiles(packages, this.apiVersion);
         const mergedBeforeDestructive = mergePackageFiles(beforeDestructivePackages, this.apiVersion);
         const mergedAfterDestructive = mergePackageFiles(afterDestructivePackages, this.apiVersion);
         const result = new PackageGeneratorResult();
         if (mergedPackage) {
             this.apiVersion = mergedPackage.version;
-            result[PACKAGE_NO_EXT] = this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
+            result[PACKAGE_NO_EXT] = this.createPackage(MetadataFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
         }
         if (mergedBeforeDestructive) {
             this.apiVersion = mergedBeforeDestructive.version;
-            result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedBeforeDestructive), outputFolder);
+            result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(MetadataFactory.createMetadataTypesFromPackageXML(mergedBeforeDestructive), outputFolder);
         }
         if (mergedAfterDestructive) {
             this.apiVersion = mergedAfterDestructive.version;
-            result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedAfterDestructive), outputFolder);
+            result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(MetadataFactory.createMetadataTypesFromPackageXML(mergedAfterDestructive), outputFolder);
         }
         return result;
     }
 
     /**
      * Method to merge all provided files into only one file. You can choose if merge all into a package.xml, destructiveChanges.xml or destructiveChangesPost.xml
-     * @param {String | Array<String>} packageOrDestructiveFiles file or list of files to merge (including package and destructive files in the same list)
-     * @param {String} outputFolder Folder to save the created files. If not provided use the default options calling options() method
+     * @param {string | string[]} packageOrDestructiveFiles file or list of files to merge (including package and destructive files in the same list)
+     * @param {string} outputFolder Folder to save the created files. If not provided use the default options calling options() method
      * 
      * @returns {PackageGeneratorResult} Object with the merge result including the paths of the merged files
      * 
-     * @throws {WrongDatatypeException} If api version is not a String or number (can be undefined)
+     * @throws {WrongDatatypeException} If api version is not a string or number (can be undefined)
      * @throws {DataNotFoundException} If not package or destructive files provided
-     * @throws {WrongFilePathException} If the package or destructive files path is not a String or cant convert to absolute path
+     * @throws {WrongFilePathException} If the package or destructive files path is not a string or cant convert to absolute path
      * @throws {FileNotFoundException} If the package or destructive files path not exists or not have access to it
      * @throws {InvalidFilePathException} If the package or destructive files path is not a file
-     * @throws {WrongDirectoryPathException} If the output Folder is not a String or cant convert to absolute path
+     * @throws {WrongDirectoryPathException} If the output Folder is not a string or cant convert to absolute path
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    mergePackagesFull(packageOrDestructiveFiles, outputFolder) {
+    mergePackagesFull(packageOrDestructiveFiles: string | string[], outputFolder: string) {
         if (this.apiVersion)
             this.apiVersion = ProjectUtils.getApiAsNumber(this.apiVersion);
         const packages = [];
@@ -260,12 +271,12 @@ class PackageGenerator {
         if (mergedPackage) {
             this.apiVersion = mergedPackage.version;
             if (!this.isDestructive) {
-                result[PACKAGE_NO_EXT] = this.createPackage(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
+                result[PACKAGE_NO_EXT] = this.createPackage(MetadataFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
             } else {
                 if (this.beforeDeploy) {
-                    result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
+                    result[DESTRUCT_BEFORE_NO_EXT] = this.createBeforeDeployDestructive(MetadataFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
                 } else {
-                    result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(TypesFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
+                    result[DESTRUCT_AFTER_NO_EXT] = this.createAfterDeployDestructive(MetadataFactory.createMetadataTypesFromPackageXML(mergedPackage), outputFolder);
                 }
             }
         }
@@ -273,27 +284,26 @@ class PackageGenerator {
     }
 
     /**
-     * Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object
-     * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to get the package or destructive XML content. If not provided use the default options calling options() method
+     * Method to get the Package XML format content as string to the selected Metadata JSON file or Metadata JSON Object
+     * @param {string |  { [key: string]: MetadataType }} metadataOrPath Metadata JSON file or Metadata JSON object to get the package or destructive XML content. If not provided use the default options calling options() method
      * 
-     * @returns {String} Returns an String with the XML content
+     * @returns {string} Returns an string with the XML content
      * 
-     * @throws {WrongDatatypeException} If api version is not a String or number. Can't be empty or undefined
-     * @throws {WrongFilePathException} If the package or destructive file path is not a String or cant convert to absolute path
+     * @throws {WrongDatatypeException} If api version is not a string or number. Can't be empty or undefined
+     * @throws {WrongFilePathException} If the package or destructive file path is not a string or cant convert to absolute path
      * @throws {FileNotFoundException} If the package or destructive file path not exists or not have access to it
      * @throws {InvalidFilePathException} If the package or destructive file path is not a file
      * @throws {WrongFormatException} If file is not a JSON file or not have the correct Metadata JSON format
-     * @throws {WrongDirectoryPathException} If the output Folder is not a String or cant convert to absolute path
+     * @throws {WrongDirectoryPathException} If the output Folder is not a string or cant convert to absolute path
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    getPackageContent(metadataOrPath) {
-        let metadata;
-        metadata = PackageGenerator.validateJSON(metadataOrPath);
+    getPackageContent(metadataOrPath: string | { [key: string]: MetadataType }): string {
+        let metadata: { [key: string]: MetadataType } = PackageGenerator.validateJSON(metadataOrPath);
         if (this.ignoreFile) {
             metadata = new Ignore(this.ignoreFile).setTypesToIgnore(this.typesToIgnore).ignoreMetadata(metadata);
         }
-        this.apiVersion = ProjectUtils.getApiAsString(this.apiVersion);
+        this.apiVersion = (this.apiVersion !== undefined) ? ProjectUtils.getApiAsString(this.apiVersion) : this.apiVersion;
         PackageGenerator.validateJSON(metadata);
         this.explicit = (this.explicit != undefined) ? this.explicit : true;
         let packageContent = '';;
@@ -311,134 +321,135 @@ class PackageGenerator {
 
     /**
      * Method to create a package XML file with the selected Metadata JSON file or Metadata JSON Object
-     * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to create the package file
-     * @param {String} outputFolder Folder to save the created file. If not provided use the default options calling options() method
+     * @param {string | { [key: string]: MetadataType }} metadataOrPath Metadata JSON file or Metadata JSON object to create the package file
+     * @param {string} outputFolder Folder to save the created file. If not provided use the default options calling options() method
      * 
-     * @returns {String} Returns the path to the created file
+     * @returns {string} Returns the path to the created file
      * 
-     * @throws {WrongDatatypeException} If api version is not a String or number. Can't be empty or undefined
-     * @throws {WrongFilePathException} If the package or destructive file path is not a String or cant convert to absolute path
+     * @throws {WrongDatatypeException} If api version is not a string or number. Can't be empty or undefined
+     * @throws {WrongFilePathException} If the package or destructive file path is not a string or cant convert to absolute path
      * @throws {FileNotFoundException} If the package or destructive file path not exists or not have access to it
      * @throws {InvalidFilePathException} If the package or destructive file path is not a file
-     * @throws {WrongDirectoryPathException} If the output Folder is not a String or cant convert to absolute path
+     * @throws {WrongDirectoryPathException} If the output Folder is not a string or cant convert to absolute path
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      * @throws {WrongFormatException} If file is not a JSON file or not have the correct Metadata JSON format
      */
-    createPackage(metadataOrPath, outputFolder) {
+    createPackage(metadataOrPath: string | { [key: string]: MetadataType }, outputFolder: string) {
         return createPackageFile(outputFolder, PACKAGE_FILENAME, this.getPackageContent(metadataOrPath));
     }
 
     /**
      * Method to create a before deploy destructive file with the selected Metadata JSON file or Metadata JSON Object
-     * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to create the destructive file
-     * @param {String} outputFolder Folder to save the created file. If not provided use the default options calling options() method
+     * @param {string | { [key: string]: MetadataType }} metadataOrPath Metadata JSON file or Metadata JSON object to create the destructive file
+     * @param {string} outputFolder Folder to save the created file. If not provided use the default options calling options() method
      * 
-     * @returns {String} Returns the path to the created file
+     * @returns {string} Returns the path to the created file
      * 
-     * @throws {WrongDatatypeException} If api version is not a String or number. Can't be empty or undefined
-     * @throws {WrongFilePathException} If the package or destructive file path is not a String or cant convert to absolute path
+     * @throws {WrongDatatypeException} If api version is not a string or number. Can't be empty or undefined
+     * @throws {WrongFilePathException} If the package or destructive file path is not a string or cant convert to absolute path
      * @throws {FileNotFoundException} If the package or destructive file path not exists or not have access to it
      * @throws {InvalidFilePathException} If the package or destructive file path is not a file
      * @throws {WrongFormatException} If file is not a JSON file or not have the correct Metadata JSON format
-     * @throws {WrongDirectoryPathException} If the output Folder is not a String or cant convert to absolute path
+     * @throws {WrongDirectoryPathException} If the output Folder is not a string or cant convert to absolute path
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    createBeforeDeployDestructive(metadataOrPath, outputFolder) {
+    createBeforeDeployDestructive(metadataOrPath: string | { [key: string]: MetadataType }, outputFolder: string) {
         return createPackageFile(outputFolder, DESTRUCT_BEFORE_FILENAME, this.getPackageContent(metadataOrPath));
     }
 
     /**
      * Method to create an after deploy destructive file with the selected Metadata JSON file or Metadata JSON Object
-     * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to create the destructive file
-     * @param {String} outputFolder Folder to save the created file. If not provided use the default options calling options() method
+     * @param {string | { [key: string]: MetadataType }} metadataOrPath Metadata JSON file or Metadata JSON object to create the destructive file
+     * @param {string} outputFolder Folder to save the created file. If not provided use the default options calling options() method
      * 
-     * @returns {String} Returns the path to the created file
+     * @returns {string} Returns the path to the created file
      * 
-     * @throws {WrongDatatypeException} If api version is not a String or number. Can't be empty or undefined
-     * @throws {WrongFilePathException} If the package or destructive file path is not a String or cant convert to absolute path
+     * @throws {WrongDatatypeException} If api version is not a string or number. Can't be empty or undefined
+     * @throws {WrongFilePathException} If the package or destructive file path is not a string or cant convert to absolute path
      * @throws {FileNotFoundException} If the package or destructive file path not exists or not have access to it
      * @throws {InvalidFilePathException} If the package or destructive file path is not a file
      * @throws {WrongFormatException} If file is not a JSON file or not have the correct Metadata JSON format
-     * @throws {WrongDirectoryPathException} If the output Folder is not a String or cant convert to absolute path
+     * @throws {WrongDirectoryPathException} If the output Folder is not a string or cant convert to absolute path
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    createAfterDeployDestructive(metadataOrPath, outputFolder) {
+    createAfterDeployDestructive(metadataOrPath: string | { [key: string]: MetadataType }, outputFolder: string) {
         return createPackageFile(outputFolder, DESTRUCT_AFTER_FILENAME, this.getPackageContent(metadataOrPath));
     }
 
     /**
      * Method to validate a Metadata JSON file or Metadata JSON Object format. If is not valid, throw several exceptions.
-     * @param {String | Object} metadataOrPath Metadata JSON file or Metadata JSON object to validate
+     * @param {string | { [key: string]: MetadataType }} metadataOrPath Metadata JSON file or Metadata JSON object to validate
      * 
-     * @throws {WrongFilePathException} If the filePath is not a String or cant convert to absolute path
+     * @throws {WrongFilePathException} If the filePath is not a string or cant convert to absolute path
      * @throws {FileNotFoundException} If the file not exists or not have access to it
      * @throws {InvalidFilePathException} If the path is not a file
      * @throws {WrongFormatException} If file is not a JSON file or not have the correct Metadata JSON format
      * 
-     * @returns {Object} Returns the Metadata Object Content validated
+     * @returns {{ [key: string]: MetadataType }} Returns the Metadata Object Content validated
      */
-    static validateJSON(metadataOrPath) {
-        return Validator.validateMetadataJSON(metadataOrPath);
+    static validateJSON(metadataOrPath: string | { [key: string]: MetadataType }): { [key: string]: MetadataType } {
+        return MetadataFactory.deserializeMetadataTypes(Validator.validateMetadataJSON(metadataOrPath));
     }
 }
-module.exports = PackageGenerator;
 
-function createPackageFile(outputPath, fileName, content) {
+function createPackageFile(outputPath: string, fileName: string, content: string) {
     outputPath = Validator.validateFolderPath(outputPath, 'Output');
     const path = outputPath + '/' + fileName;
     FileWriter.createFileSync(path, content);
     return path;
 }
 
-function makeTypesBlock(metadataType, explicit) {
-    metadataType = new MetadataType(metadataType);
+function makeTypesBlock(metadataType: MetadataType, explicit?: boolean): string {
     let typesBlockContent = '';
     let addBlock = false;
-    if (!metadataType.haveChilds())
+    if (!metadataType.hasChilds()) {
         return '';
+    }
     typesBlockContent += '\t' + TYPES_TAG_START + NEWLINE;
-    if (!explicit && metadataType.checked && metadataType.allChildsChecked() && !NOT_ALLOWED_WILDCARDS[metadataType.name]) {
+    if (!explicit && metadataType.checked && metadataType.allChildsChecked() && !NOT_ALLOWED_WILDCARDS.includes(metadataType.name)) {
         typesBlockContent += '\t\t' + MEMBERS_TAG_START + '*' + MEMBERS_TAG_END + NEWLINE;
         addBlock = true;
     } else {
         let folderAdded = false;
-        Object.keys(metadataType.childs).forEach(function (key) {
-            let mtObject = new MetadataObject(metadataType.getChild(key));
-            if (mtObject.haveChilds()) {
+        Object.keys(metadataType.childs).forEach((key) => {
+            const mtObject = metadataType.getChild(key);
+            if (mtObject && mtObject.hasChilds()) {
                 if (!folderAdded && mtObject.checked && (metadataType.name === MetadataTypes.DOCUMENT || metadataType.name === MetadataTypes.EMAIL_TEMPLATE || metadataType.name === MetadataTypes.REPORT || metadataType.name === MetadataTypes.DASHBOARD)) {
                     typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + MEMBERS_TAG_END + NEWLINE
                     addBlock = true;
                     folderAdded = true;
                 }
-                Object.keys(mtObject.childs).forEach(function (key) {
-                    let mtItem = new MetadataItem(mtObject.getChild(key));
-                    let separator;
-                    if (metadataType.name === MetadataTypes.EMAIL_TEMPLATE || metadataType.name === MetadataTypes.DOCUMENT || metadataType.name === MetadataTypes.REPORT || metadataType.name === MetadataTypes.DASHBOARD) {
-                        separator = '/';
-                    } else if (metadataType.name === MetadataTypes.LAYOUT || metadataType.name === MetadataTypes.CUSTOM_OBJECT_TRANSLATIONS || metadataType.name === MetadataTypes.FLOW) {
-                        separator = '-';
-                    } else {
-                        separator = '.';
-                    }
-                    if (mtItem.checked) {
-                        if(metadataType.name === MetadataTypes.QUICK_ACTION){
-                            if(mtObject.name === mtItem.name || mtObject.name === 'GlobalActions'){
-                                typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtItem.name + MEMBERS_TAG_END + NEWLINE
-                                addBlock = true;
+                Object.keys(mtObject.childs).forEach((key) => {
+                    const mtItem = mtObject.getChild(key);
+                    if (mtItem) {
+                        let separator;
+                        if (metadataType.name === MetadataTypes.EMAIL_TEMPLATE || metadataType.name === MetadataTypes.DOCUMENT || metadataType.name === MetadataTypes.REPORT || metadataType.name === MetadataTypes.DASHBOARD) {
+                            separator = '/';
+                        } else if (metadataType.name === MetadataTypes.LAYOUT || metadataType.name === MetadataTypes.CUSTOM_OBJECT_TRANSLATIONS || metadataType.name === MetadataTypes.FLOW) {
+                            separator = '-';
+                        } else {
+                            separator = '.';
+                        }
+                        if (mtItem.checked) {
+                            if (metadataType.name === MetadataTypes.QUICK_ACTION) {
+                                if (mtObject.name === mtItem.name || mtObject.name === 'GlobalActions') {
+                                    typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtItem.name + MEMBERS_TAG_END + NEWLINE
+                                    addBlock = true;
+                                } else {
+                                    typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE
+                                    addBlock = true;
+                                }
                             } else {
                                 typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE
                                 addBlock = true;
                             }
-                        } else {
-                            typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE
-                            addBlock = true;
                         }
                     }
                 });
-            } else if (mtObject.checked) {
+            } else if (mtObject && mtObject.checked) {
                 typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + MEMBERS_TAG_END + NEWLINE
                 addBlock = true;
             }
@@ -449,12 +460,13 @@ function makeTypesBlock(metadataType, explicit) {
     if (addBlock) {
         return typesBlockContent;
     }
-    else
+    else {
         return '';
+    }
 }
 
-function preparePackageFromXML(pkg, apiVersion) {
-    let result = {};
+function preparePackageFromXML(pkg: any, apiVersion?: string | number): any {
+    let result: any = {};
     if (pkg.Package) {
         result.prepared = true;
         result.version = apiVersion || pkg.Package.version;
@@ -470,33 +482,38 @@ function preparePackageFromXML(pkg, apiVersion) {
     return result;
 }
 
-function mergePackageFiles(packages, apiVersion) {
+function mergePackageFiles(packages: string[], apiVersion?: string | number): any {
     let result;
     let api = 0;
     for (const pkg of packages) {
         const xmlRoot = XMLParser.parseXML(FileReader.readFileSync(pkg));
         let preparedPackage = preparePackageFromXML(xmlRoot, apiVersion);
-        if (!result)
+        if (!result) {
             result = preparedPackage;
-        else
+        } else {
             result = mergePackage(result, preparedPackage);
-        if (result.version > api)
+        }
+        if (result.version > api) {
             api = result.version;
+        }
     }
-    if (result)
+    if (result) {
         result.version = apiVersion || api;
-    if (result && Object.keys(result).length === 2)
+    }
+    if (result && Object.keys(result).length === 2) {
         result = undefined;
+    }
     return result;
 }
 
-function mergePackage(target, source) {
+function mergePackage(target: any, source: any): any {
     Object.keys(target).forEach(function (key) {
         if (key !== 'version' && key !== 'prepared') {
             if (source[key]) {
                 for (const sourceMember of source[key]) {
-                    if (!target[key].includes(sourceMember))
+                    if (!target[key].includes(sourceMember)) {
                         target[key].push(sourceMember);
+                    }
                 }
             }
             target[key] = target[key].sort();
