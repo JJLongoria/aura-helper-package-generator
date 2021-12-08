@@ -299,12 +299,11 @@ export class PackageGenerator {
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
     getPackageContent(metadataOrPath: string | { [key: string]: MetadataType }): string {
-        let metadata: { [key: string]: MetadataType } = PackageGenerator.validateJSON(metadataOrPath);
+        let metadata = PackageGenerator.validateJSON(metadataOrPath);
         if (this.ignoreFile) {
             metadata = new Ignore(this.ignoreFile).setTypesToIgnore(this.typesToIgnore).ignoreMetadata(metadata);
         }
         this.apiVersion = (this.apiVersion !== undefined) ? ProjectUtils.getApiAsString(this.apiVersion) : this.apiVersion;
-        PackageGenerator.validateJSON(metadata);
         this.explicit = (this.explicit != undefined) ? this.explicit : true;
         let packageContent = '';;
         packageContent += START_XML_FILE + NEWLINE;
