@@ -1,5 +1,5 @@
 import { XML } from '@aurahelper/languages';
-import { MetadataTypes, CoreUtils, FileWriter, FileReader, MetadataType, MetadataObject, MetadataItem, PackageGeneratorResult, PathUtils, DataNotFoundException } from "@aurahelper/core";
+import { MetadataTypes, CoreUtils, FileWriter, FileReader, MetadataType, PackageGeneratorResult, PathUtils, DataNotFoundException } from "@aurahelper/core";
 import { ProjectUtils } from '@aurahelper/core/dist/utils';
 import { MetadataFactory } from '@aurahelper/metadata-factory';
 import { Ignore } from '@aurahelper/ignore';
