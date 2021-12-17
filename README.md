@@ -143,7 +143,7 @@ Constructor to instance a new PackageGenerator object. All parameters are option
   
     Method to merge all provided files into only one file. You can choose if merge all into a package.xml, destructiveChanges.xml or destructiveChangesPost.xml
 
-  - [**getPackageContent(metadataOrPath)**](#getpackagecontentmetadataorpath)
+  - [**getPackageContent(metadataOrPath, useIgnoreDestructive)**](#getpackagecontentmetadataorpath)
 
     Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object
 
@@ -564,12 +564,14 @@ Merge all package XML, all destructiveChanges XML and all destructiveChangesPost
 
 ```
 ---
-## [**getPackageContent(metadataOrPath)**](#getpackagecontentmetadataorpath)
+## [**getPackageContent(metadataOrPath, useIgnoreDestructive)**](#getpackagecontentmetadataorpath)
 Method to get the Package XML format content as String to the selected Metadata JSON file or Metadata JSON Object. See [Metadata JSON Format](#metadata-file) section to understand the JSON Metadata Format
 
 ### **Parameters:**
   - **metadataOrPath**: Metadata JSON file or Metadata JSON object to get the package or destructive XML content.
     - `string` | `{ [key: string]: MetadataType }`
+  - **useIgnoreDestructive**: True to use the ignore destructive file to ignore the package content.
+    - `boolean` 
 
 ### **Return:**
 Returns an String with the XML content

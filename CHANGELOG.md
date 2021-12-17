@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [2.1.0 - 2021-12-15]
+### Added
+- Added support to set an ignore file to destructive changes
+- Added support to get the content package using the destructive ignore file
+
 ## [2.0.0 - 2021-12-13]
 ### Added
 - Changed to Typescript
