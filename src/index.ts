@@ -56,6 +56,7 @@ export class PackageGenerator {
     beforeDeploy: boolean;
     explicit: boolean;
     ignoreFile?: string;
+    destructiveIgnoreFile?: string;
     typesToIgnore?: string[];
 
     /**
@@ -71,6 +72,7 @@ export class PackageGenerator {
         this.explicit = true;
         this.ignoreFile = undefined;
         this.typesToIgnore = undefined;
+        this.destructiveIgnoreFile = undefined;
     }
 
     /**
@@ -153,6 +155,17 @@ export class PackageGenerator {
     }
 
     /**
+     * Method to set the path to the ignore file to destructive package
+     * @param {string} destructiveIgnoreFile path to the ignore file to ignore some metadata types from the packages
+     * 
+     * @returns {PackageGenerator} Return the package generator instance
+     */
+    setDestructiveIgnoreFile(destructiveIgnoreFile: string): PackageGenerator {
+        this.destructiveIgnoreFile = destructiveIgnoreFile;
+        return this;
+    }
+
+    /**
      * Method to set the Metadata Types to ignore from package (Also must be exists on ignore file)
      * @param {string | string[]} typesToIgnore List with the Metadata Type API Names to ignore. This parameter is used to ignore only the specified metadata (also must be in ignore file) and avoid ignore all metadata types specified on the file.
      * 
@@ -197,7 +210,7 @@ export class PackageGenerator {
                 packages.push(file);
             } else if (fileName.indexOf(DESTRUCT_AFTER_NO_EXT) !== -1) {
                 afterDestructivePackages.push(file);
-            } else if ((fileName.indexOf(DESTRUCT_BEFORE_NO_EXT) !== -1 && fileName.indexOf(DESTRUCT_AFTER_NO_EXT) == -1)) {
+            } else if ((fileName.indexOf(DESTRUCT_BEFORE_NO_EXT) !== -1 && fileName.indexOf(DESTRUCT_AFTER_NO_EXT) === -1)) {
                 beforeDestructivePackages.push(file);
             }
             if (this.mergeDestructives) {
@@ -249,8 +262,9 @@ export class PackageGenerator {
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
     mergePackagesFull(packageOrDestructiveFiles: string | string[], outputFolder: string) {
-        if (this.apiVersion)
+        if (this.apiVersion) {
             this.apiVersion = ProjectUtils.getApiAsNumber(this.apiVersion);
+        }
         const packages = [];
         packageOrDestructiveFiles = XMLUtils.forceArray(packageOrDestructiveFiles);
         for (let file of packageOrDestructiveFiles) {
@@ -264,8 +278,9 @@ export class PackageGenerator {
                 packages.push(file);
             }
         }
-        if (packages.length === 0)
+        if (packages.length === 0) {
             throw new DataNotFoundException('Not package files (' + PACKAGE_NO_EXT + ') or destructive files (' + DESTRUCT_BEFORE_NO_EXT + ', ' + DESTRUCT_AFTER_NO_EXT + ') selected to merge');
+        }
         const mergedPackage = mergePackageFiles(packages, this.apiVersion);
         const result = new PackageGeneratorResult();
         if (mergedPackage) {
@@ -286,6 +301,7 @@ export class PackageGenerator {
     /**
      * Method to get the Package XML format content as string to the selected Metadata JSON file or Metadata JSON Object
      * @param {string |  { [key: string]: MetadataType }} metadataOrPath Metadata JSON file or Metadata JSON object to get the package or destructive XML content. If not provided use the default options calling options() method
+     * @param {boolean} [useIgnoreDestructive] True to use the ignore destructive file to ignore the package content
      * 
      * @returns {string} Returns an string with the XML content
      * 
@@ -298,20 +314,27 @@ export class PackageGenerator {
      * @throws {DirectoryNotFoundException} If the directory not exists or not have access to it
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
-    getPackageContent(metadataOrPath: string | { [key: string]: MetadataType }): string {
+    getPackageContent(metadataOrPath: string | { [key: string]: MetadataType }, useIgnoreDestructive?: boolean): string {
         let metadata = PackageGenerator.validateJSON(metadataOrPath);
-        if (this.ignoreFile) {
-            metadata = new Ignore(this.ignoreFile).setTypesToIgnore(this.typesToIgnore).ignoreMetadata(metadata);
+        if (this.ignoreFile || this.destructiveIgnoreFile) {
+            const ignore = new Ignore().setTypesToIgnore(this.typesToIgnore);
+            if (useIgnoreDestructive && this.destructiveIgnoreFile) {
+                ignore.setIgnoreFile(this.destructiveIgnoreFile);
+            } else if (this.ignoreFile) {
+                ignore.setIgnoreFile(this.ignoreFile);
+            }
+            metadata = ignore.ignoreMetadata(metadata);
         }
         this.apiVersion = (this.apiVersion !== undefined) ? ProjectUtils.getApiAsString(this.apiVersion) : this.apiVersion;
-        this.explicit = (this.explicit != undefined) ? this.explicit : true;
+        this.explicit = (this.explicit !== undefined) ? this.explicit : true;
         let packageContent = '';;
         packageContent += START_XML_FILE + NEWLINE;
         packageContent += PACKAGE_TAG_START + NEWLINE;
         Object.keys(metadata).forEach((key) => {
             const typesBlock = makeTypesBlock(metadata[key], this.explicit);
-            if (typesBlock)
-                packageContent += typesBlock
+            if (typesBlock) {
+                packageContent += typesBlock;
+            }
         });
         packageContent += '\t' + VERSION_TAG_START + this.apiVersion + VERSION_TAG_END + NEWLINE;
         packageContent += PACKAGE_TAG_END;
@@ -355,7 +378,7 @@ export class PackageGenerator {
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
     createBeforeDeployDestructive(metadataOrPath: string | { [key: string]: MetadataType }, outputFolder: string) {
-        return createPackageFile(outputFolder, DESTRUCT_BEFORE_FILENAME, this.getPackageContent(metadataOrPath));
+        return createPackageFile(outputFolder, DESTRUCT_BEFORE_FILENAME, this.getPackageContent(metadataOrPath, true));
     }
 
     /**
@@ -375,7 +398,7 @@ export class PackageGenerator {
      * @throws {InvalidDirectoryPathException} If the path is not a directory
      */
     createAfterDeployDestructive(metadataOrPath: string | { [key: string]: MetadataType }, outputFolder: string) {
-        return createPackageFile(outputFolder, DESTRUCT_AFTER_FILENAME, this.getPackageContent(metadataOrPath));
+        return createPackageFile(outputFolder, DESTRUCT_AFTER_FILENAME, this.getPackageContent(metadataOrPath, true));
     }
 
     /**
@@ -417,7 +440,7 @@ function makeTypesBlock(metadataType: MetadataType, explicit?: boolean): string 
             const mtObject = metadataType.getChild(key);
             if (mtObject && mtObject.hasChilds()) {
                 if (!folderAdded && mtObject.checked && (metadataType.name === MetadataTypes.DOCUMENT || metadataType.name === MetadataTypes.EMAIL_TEMPLATE || metadataType.name === MetadataTypes.REPORT || metadataType.name === MetadataTypes.DASHBOARD)) {
-                    typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + MEMBERS_TAG_END + NEWLINE
+                    typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + MEMBERS_TAG_END + NEWLINE;
                     addBlock = true;
                     folderAdded = true;
                 }
@@ -435,21 +458,21 @@ function makeTypesBlock(metadataType: MetadataType, explicit?: boolean): string 
                         if (mtItem.checked) {
                             if (metadataType.name === MetadataTypes.QUICK_ACTION) {
                                 if (mtObject.name === mtItem.name || mtObject.name === 'GlobalActions') {
-                                    typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtItem.name + MEMBERS_TAG_END + NEWLINE
+                                    typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtItem.name + MEMBERS_TAG_END + NEWLINE;
                                     addBlock = true;
                                 } else {
-                                    typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE
+                                    typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE;
                                     addBlock = true;
                                 }
                             } else {
-                                typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE
+                                typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + separator + mtItem.name + MEMBERS_TAG_END + NEWLINE;
                                 addBlock = true;
                             }
                         }
                     }
                 });
             } else if (mtObject && mtObject.checked) {
-                typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + MEMBERS_TAG_END + NEWLINE
+                typesBlockContent += '\t\t' + MEMBERS_TAG_START + mtObject.name + MEMBERS_TAG_END + NEWLINE;
                 addBlock = true;
             }
         });
@@ -518,5 +541,5 @@ function mergePackage(target: any, source: any): any {
             target[key] = target[key].sort();
         }
     });
-    return target
+    return target;
 }
